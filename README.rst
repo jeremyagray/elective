@@ -24,12 +24,12 @@ format, which ``elective`` will not.
 Roadmap
 ~~~~~~~
 
-* Implement testing, build, documentation, and CI (target:  0.1.0).
 * Implement basic TOML configuration loading from ``pyproject.toml`` (bring in from ``pccc``, target:  0.2.0).
 * Consolidate TOML, JSON, and YAML loading (target:  0.2.0).
 * Add ``argparser`` (target:  0.4.0).
 * Implement and add environment variable processing (target:  0.5.0).
 * Implement and add ``*.env`` file processing (target:  0.6.0).
+* Implement testing, build, documentation, and CI (complete:  0.1.0).
 
 Installation
 ~~~~~~~~~~~~
