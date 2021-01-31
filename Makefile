@@ -47,7 +47,9 @@ test:
 	pytest --cov elective --cov-report term
 
 upload:
+	python3 -m twine check dist/*
 	python3 -m twine upload --verbose dist/*
 
 upload-test:
+	python3 -m twine check dist/*
 	python3 -m twine upload --verbose --repository testpypi dist/*
