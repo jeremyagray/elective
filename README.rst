@@ -1,5 +1,5 @@
 elective
------
+--------
 
 A CSS naming hierarchy enforcer.
 
@@ -11,7 +11,7 @@ A CSS naming hierarchy enforcer.
    :alt: Documentation Status
 
 What is elective?
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 ``elective`` is a Python program configuration option loader, capable
 of loading options from configuration files (TOML, JSON, YAML), the
