@@ -9,9 +9,8 @@ Classes
 .. toctree::
    :maxdepth: 2
 
-..
-   ClassName
-   ------------------
+elective.Config()
+-----------------
 
-   .. autoclass:: chcss::ClassName
-      :members:
+.. autoclass:: elective::Config
+	       :members:

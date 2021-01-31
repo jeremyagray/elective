@@ -3,8 +3,8 @@
 .. elective, a python program configuration option loader.
 .. Copyright (C) 2021 Jeremy A Gray <jeremy.a.gray@gmail.com>.
 
-``chcss`` Documentation
-=======================
+``elective`` Documentation
+==========================
 
 .. toctree::
    :maxdepth: 3
