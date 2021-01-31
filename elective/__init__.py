@@ -4,4 +4,4 @@
 # Copyright (C) 2021 Jeremy A Gray <jeremy.a.gray@gmail.com>.
 """``elective``:  a CSS naming hierarchy enforcer."""
 
-# from .config import Config
+from .config import Config
