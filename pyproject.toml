@@ -122,7 +122,9 @@ include = [
 
 [tool.poetry.dependencies]
 
-python = "^3.9"
+"ruamel.yaml" = "^0"
+bespon = "^0.6"
+python = ">=3.6.1,<4.0"
 toml = "^0"
 
 [tool.poetry.dev-dependencies]
