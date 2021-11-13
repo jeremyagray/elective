@@ -1,7 +1,12 @@
-# SPDX-License-Identifier: GPL-3.0-or-later
+# ******************************************************************************
 #
-# elective, a python program configuration option loader.
-# Copyright (C) 2021 Jeremy A Gray <jeremy.a.gray@gmail.com>.
+# elective:  a Python configuration loader generator
+#
+# Copyright (C) 2021 Jeremy A Gray <gray@flyquackswim.com>.
+#
+# SPDX-License-Identifier: MIT
+#
+# ******************************************************************************
 
 [build-system]
 
@@ -82,12 +87,12 @@ required_footers = [
 
 [tool.poetry]
 
-authors = ["Jeremy A Gray <jeremy.a.gray@gmail.com>"]
-description = "elective:  a python program configuration option loader"
+authors = ["Jeremy A Gray <gray@flyquackswim.com>"]
+description = "elective:  a Python configuration loader generator"
 name = "elective"
 version = "0.1.1"
-license = "GPL-3.0-or-later"
-maintainers = ["Jeremy A Gray <jeremy.a.gray@gmail.com>"]
+license = "MIT"
+maintainers = ["Jeremy A Gray <gray@flyquackswim.com>"]
 readme = "README.rst"
 homepage = "https://github.com/jeremyagray/elective"
 repository = "https://github.com/jeremyagray/elective"
@@ -95,12 +100,13 @@ repository = "https://github.com/jeremyagray/elective"
 classifiers = [
   "Development Status :: 1 - Planning",
   "Environment :: Console",
-  "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+  "License :: OSI Approved :: MIT License",
   "Intended Audience :: Developers",
   "Programming Language :: Python :: 3.6",
   "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
   "Topic :: Software Development :: User Interfaces",
 ]
 

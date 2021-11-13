@@ -1,7 +1,7 @@
 elective
 --------
 
-A CSS naming hierarchy enforcer.
+A configuration option loader for python.
 
 .. image:: https://badge.fury.io/py/elective.svg
    :target: https://badge.fury.io/py/elective
@@ -13,23 +13,33 @@ A CSS naming hierarchy enforcer.
 What is elective?
 ~~~~~~~~~~~~~~~~~
 
-``elective`` is a Python program configuration option loader, capable
-of loading options from configuration files (TOML, JSON, YAML), the
-environment, or the command line, all with the same names and formats.
-There are many other fine options available, but none offered this
-combination of formats, configurable precedence, clear code and
-documentation, or adequate testing.  Most also still use the ini
-format, which ``elective`` will not.
+``elective`` is a Python program configuration loader generator that
+can leverage environment variables, configuration files (TOML, JSON,
+YAML, BespON), and the command line (via ``argparse``) to generate a
+custom loader module to use in your Python application with a goal of
+being able to specify any configurable option identically via any
+generation method.  ``elective`` supports customization of the
+providers file formats and of the method of combining the results from
+all providers.
 
 Roadmap
 ~~~~~~~
 
-* Implement basic TOML configuration loading from ``pyproject.toml`` (bring in from ``pccc``, target:  0.2.0).
-* Consolidate TOML, JSON, and YAML loading (target:  0.2.0).
-* Add ``argparser`` (target:  0.4.0).
-* Implement and add environment variable processing (target:  0.5.0).
-* Implement and add ``*.env`` file processing (target:  0.6.0).
-* Implement testing, build, documentation, and CI (complete:  0.1.0).
+* Allow for configurable provider precedence.
+* Allow for configurable file format precedence.
+* Allow for configurable provider combination.
+* Create left merge, right merge, and join provider combiners.
+* Generate boolean options.
+* Generate string options.
+* Generate number options.
+* Generate list options.
+* Generate hash options.
+* Create configuration object interface.
+* Generate dependency requirements for parent projects (pip).
+* Generate dependency requirements for parent projects (poetry).
+* Allow for configurable file format dependencies.
+* Create TOML configuration to generate configuration generators.
+* Bootstrap to self-host the ``elective`` configuration generator.
 
 Installation
 ~~~~~~~~~~~~
@@ -49,34 +59,38 @@ Usage
 In code::
 
   >>> import elective
-  >>> conf = elective.Config()
 
 See the source and `documentation
 <https://elective.readthedocs.io/en/latest/>`_ for more information.
 
 Copyright and License
-~~~~~~~~~~~~~~~~~~~~~
+=====================
 
-SPDX-License-Identifier: `GPL-3.0-or-later
-<https://spdx.org/licenses/GPL-3.0-or-later.html>`_
+SPDX-License-Identifier: `MIT <https://spdx.org/licenses/MTI.html>`_
 
-elective, a CSS naming hierarchy enforcer.
-Copyright (C) 2021 `Jeremy A Gray <jeremy.a.gray@gmail.com>`_.
+django-loader:  a configuration variable and secrets loader for Django
+apps.
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the `GNU General Public License
-<https://www.gnu.org/licenses/gpl-3.0.html>`_ as published by the Free
-Software Foundation, either version 3 of the License, or (at your
-option) any later version.
+Copyright (C) 2021 `Jeremy A Gray <gray@flyquackswim.com>`_.
 
-This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-General Public License for more details.
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
 
-You should have received a copy of the `GNU General Public License
-<https://www.gnu.org/licenses/gpl-3.0.html>`_ along with this program.
-If not, see https://www.gnu.org/licenses/.
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 Author
 ~~~~~~
