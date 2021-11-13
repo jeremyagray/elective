@@ -1,13 +1,12 @@
-#***********************************************************************
+# ******************************************************************************
 #
-# Makefile - chore makefile for elective
+# elective:  a Python configuration loader generator
 #
-# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright 2021 Jeremy A Gray <gray@flyquackswim.com>.
 #
-# elective, a python program configuration option loader.
-# Copyright (C) 2021 Jeremy A Gray <jeremy.a.gray@gmail.com>.
+# SPDX-License-Identifier: MIT
 #
-#***********************************************************************
+# ******************************************************************************
 
 .PHONY : build clean commit dist docs freeze lint pip test test-all upload upload-test
 
