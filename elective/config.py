@@ -25,3 +25,8 @@ class Config:
     def __repr__(self):
         """Reproduce a Config() object."""
         pass
+
+
+def load(argv=None):
+    """Load the configuration."""
+    pass

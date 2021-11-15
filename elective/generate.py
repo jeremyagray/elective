@@ -8,8 +8,9 @@
 #
 # ******************************************************************************
 
-"""elective:  a Python configuration loader generator."""
+"""elective configuration functions."""
 
-from .config import Config
-from .config import load
-from .generate import generate
+
+def generate(conf=None):
+    """Generate a configuration loader."""
+    pass
