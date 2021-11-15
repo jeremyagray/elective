@@ -70,11 +70,7 @@ types = [
 
 scopes = [
 "cli",
-"envfile",
-"environment",
-"json",
-"toml",
-"yaml",
+"mod",
 ]
 
 footers = [
