@@ -8,10 +8,13 @@
 #
 # ******************************************************************************
 
-"""elective configuration functions."""
+"""elective generator tests."""
+
+from elective import generate
 
 
-def generate(conf=None):
-    """Generate a configuration loader."""
-    module = ""
-    return module
+def test_generate_returns_string():
+    """elective.generate() should return a string."""
+    actual = generate()
+
+    assert isinstance(actual, str)

@@ -12,7 +12,7 @@ def main(argv=None):
     """Generate a new configurator."""
     try:
         conf = elective.load(argv)
-        elective.generate(conf)
+        print(elective.generate(conf))
         sys.exit(0)
     except Exception as error:
         print(error, file=sys.stderr)
