@@ -36,7 +36,6 @@ Roadmap
 ~~~~~~~
 
 * Allow for configurable provider precedence.
-* Allow for configurable file format precedence.
 * Allow for configurable provider combination.
 * Create left merge, right merge, and join provider combiners.
 * Generate boolean options.
@@ -50,6 +49,9 @@ Roadmap
 * Allow for configurable file format dependencies.
 * Create TOML configuration to generate configuration generators.
 * Bootstrap to self-host the ``elective`` configuration generator.
+* Generate code that passes the project linting tests.
+* Generate an executable entry point to run the generated configuration.
+* Generate tests for the generated configuration.
 
 Installation
 ~~~~~~~~~~~~
