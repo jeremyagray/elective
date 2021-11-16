@@ -1,0 +1,53 @@
+[elective]
+
+# Environment prefix should have a sensible generated default of
+# f"ELECTIVE_{sys.argv[0].rstrip('.py').upper()}_"
+env-prefix = "ELECTIVE_ELECTIVE_"
+
+# ("left-merge" | "right-merge" | "join")
+combination = "right-merge"
+
+order = [
+  "default",
+  "toml",
+  "json",
+  "yaml",
+  "bespon",
+  "env",
+  "cli",
+]
+
+[elective.license]
+
+show = true
+message = "MIT license."
+spdx = "MIT"
+
+[elective.warranty]
+
+show = true
+message = "There is no warranty."
+
+[elective.options]
+
+[elective.options.spell-check]
+
+# Validate as valid type.
+type = "boolean"
+# Validate default based on type.
+default = false
+# Use default generation algorithm, lower case.
+short = "-c"
+# Default should be upper case positive short.
+short_negative = "-C"
+# Generate from name; spaces/punctuation to dashes.
+long = "--spell-check"
+# Prepend "--no-" to positive base.
+long_negative = "--no-spell-check"
+# Generate from name; spaces/punctuation to underscores.
+destination = "spell_check"
+# Generate default from name and default value,
+# like "{name}:  {default}"
+help = [
+  "Spell check.  Default is no spell checking.",
+]
