@@ -6,10 +6,12 @@ import argparse
 def _create_argument_parser():
     """Create an argparse argument parser."""
     parser = argparse.ArgumentParser(
-        description="""This program comes with ABSOLUTELY NO WARRANTY; for details type
+        description="""\
+This program comes with ABSOLUTELY NO WARRANTY; for details type
 ``elective --show-warranty``.  This is free software, and you are welcome
 to redistribute it under certain conditions; type ``elective
 --show-license`` for details.
+
 """,
     )
 

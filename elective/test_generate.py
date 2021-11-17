@@ -50,3 +50,14 @@ def test__generate_file_banner_custom():
     expected = f'"""{message}"""'
 
     assert actual == expected
+
+
+def test__generate_argparse_parser():
+    """Should return an argument parser."""
+    description = "This is a description."
+    actual = elective._generate_argparse_parser(
+        description=description,
+    )
+
+    assert actual["dependencies"][0] == "import argparse"
+    assert description in actual["blocks"][0]

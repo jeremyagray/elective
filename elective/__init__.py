@@ -13,5 +13,6 @@
 from .config import Config
 from .config import load
 from .generate import _generate_argparse_display_action
+from .generate import _generate_argparse_parser
 from .generate import _generate_file_banner
 from .generate import generate
