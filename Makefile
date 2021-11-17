@@ -33,8 +33,9 @@ commit :
 	pre-commit run --all-files
 
 lint :
-	flake8 --exit-zero
-	black --check .
+	black bin elective
+	isort bin elective
+	flake8 --exit-zero bin elective
 
 pip :
 	pip install -r requirements.txt
