@@ -52,7 +52,7 @@ class _show_{name.lower()}_action(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         print(\"\"\"\\\n{rendered_message}\n\"\"\")
 
-        sys.exit(0)\n\n
+        parser.exit(status=0)\n\n
 """
 
     return {
@@ -73,7 +73,6 @@ def generate(conf=None):
 
 
 import argparse
-import sys
 
 
 def _create_argument_parser():
