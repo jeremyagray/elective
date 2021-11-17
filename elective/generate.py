@@ -48,6 +48,59 @@ def _create_argument_parser():
     }
 
 
+def _generate_argparse_boolean(group="parser", **kwargs):
+    """Generate an ``argparse`` boolean argument."""
+    block = f"""\
+    {group}.add_argument(
+        \"-{kwargs['short']}\",
+        \"--{kwargs['long']}\",
+        dest=\"{kwargs['dest']}\",
+        default=None,
+        action=\"{kwargs['action']}\",
+        help=\"{kwargs['help']}\",
+    )
+"""
+
+    return {
+        "dependencies": [
+            "import argparse",
+        ],
+        "blocks": [block],
+    }
+
+
+def _generate_argparse_boolean_group(**kwargs):
+    """Generate an ``argparse`` mutually exclusive boolean group."""
+    block = f"    {kwargs['dest']}_group = parser.add_mutually_exclusive_group()\n"
+
+    return {
+        "dependencies": [
+            "import argparse",
+        ],
+        "blocks": [
+            block,
+            _generate_argparse_boolean(
+                group=f"{kwargs['dest']}_group",
+                short=kwargs["short"].lower(),
+                long=kwargs["long"].lower(),
+                dest=kwargs["dest"],
+                default=None,
+                action="store_true",
+                help=kwargs["help"],
+            )["blocks"][0],
+            _generate_argparse_boolean(
+                group=f"{kwargs['dest']}_group",
+                short=kwargs["short"].upper(),
+                long="no-" + kwargs["long"].lower(),
+                dest=kwargs["dest"],
+                default=None,
+                action="store_false",
+                help=kwargs["help"],
+            )["blocks"][0],
+        ],
+    }
+
+
 def _generate_argparse_display_action(name, message, line_length=72):
     """Generate an ``argparse`` display action option."""
     parser_block = f"""\
@@ -152,29 +205,19 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     module += warranty["blocks"][0]
     module += license["blocks"][0]
 
-    module += """\
-    spell_group = parser.add_mutually_exclusive_group()
-    spell_group.add_argument(
-        "-c",
-        "--spell-check",
+    group = _generate_argparse_boolean_group(
+        short="c",
+        long="spell-check",
         dest="spell_check",
         default=None,
-        action="store_true",
         help="Spell check the commit.  Default is no spell checking.",
     )
-    spell_group.add_argument(
-        "-C",
-        "--no-spell-check",
-        dest="spell_check",
-        default=None,
-        action="store_false",
-        help="Do not spell check the commit.  Default is no spell checking.",
-    )
 
-    return parser
+    module += group["blocks"][0]
+    module += group["blocks"][1]
+    module += group["blocks"][2]
 
-
-"""
+    module += "\n    return parser\n"
 
     module += warranty["classes"][0]
     module += license["classes"][0]

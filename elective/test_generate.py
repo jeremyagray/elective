@@ -10,7 +10,6 @@
 
 """elective generator tests."""
 
-# from elective import generate
 import elective
 
 
@@ -61,3 +60,61 @@ def test__generate_argparse_parser():
 
     assert actual["dependencies"][0] == "import argparse"
     assert description in actual["blocks"][0]
+
+
+def test__generate_argparse_boolean():
+    """Generate an ``argparse`` boolean argument."""
+    group = "parser"
+    short = "c"
+    long = "spell-check"
+    dest = "spell_check"
+    action = "store_true"
+    help = "Spell check the commit.  Default is no spell checking."
+
+    actual = elective._generate_argparse_boolean(
+        group=group,
+        short=short,
+        long=long,
+        dest=dest,
+        default=None,
+        action=action,
+        help=help,
+    )
+
+    assert actual["dependencies"][0] == "import argparse"
+
+    assert group in actual["blocks"][0]
+    assert group in actual["blocks"][0]
+    assert f"-{short}" in actual["blocks"][0]
+    assert f"--{long}" in actual["blocks"][0]
+    assert dest in actual["blocks"][0]
+    assert action in actual["blocks"][0]
+    assert help in actual["blocks"][0]
+
+
+def test__generate_argparse_boolean_group():
+    """Generate an ``argparse`` boolean argument group."""
+    short = "c"
+    long = "spell-check"
+    dest = "spell_check"
+    help = "Spell check the commit.  Default is no spell checking."
+
+    actual = elective._generate_argparse_boolean_group(
+        short=short,
+        long=long,
+        dest=dest,
+        default=None,
+        help=help,
+    )
+    expected = "\n".join(actual["blocks"])
+
+    assert actual["dependencies"][0] == "import argparse"
+
+    assert f"-{short}" in expected
+    assert f"-{short.upper()}" in expected
+    assert f"--{long}" in expected
+    assert f"--no-{long}" in expected
+    assert dest in expected
+    assert "store_true" in expected
+    assert "store_false" in expected
+    assert help in expected

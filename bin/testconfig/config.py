@@ -27,8 +27,8 @@ to redistribute it under certain conditions; type ``elective
         action=_show_license_action,
         help="Show license.",
     )
-    spell_group = parser.add_mutually_exclusive_group()
-    spell_group.add_argument(
+    spell_check_group = parser.add_mutually_exclusive_group()
+    spell_check_group.add_argument(
         "-c",
         "--spell-check",
         dest="spell_check",
@@ -36,13 +36,13 @@ to redistribute it under certain conditions; type ``elective
         action="store_true",
         help="Spell check the commit.  Default is no spell checking.",
     )
-    spell_group.add_argument(
+    spell_check_group.add_argument(
         "-C",
         "--no-spell-check",
         dest="spell_check",
         default=None,
         action="store_false",
-        help="Do not spell check the commit.  Default is no spell checking.",
+        help="Spell check the commit.  Default is no spell checking.",
     )
 
     return parser
