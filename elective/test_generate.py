@@ -106,15 +106,29 @@ def test__generate_argparse_boolean_group():
         default=None,
         help=help,
     )
-    expected = "\n".join(actual["blocks"])
 
     assert actual["dependencies"][0] == "import argparse"
 
-    assert f"-{short}" in expected
-    assert f"-{short.upper()}" in expected
-    assert f"--{long}" in expected
-    assert f"--no-{long}" in expected
-    assert dest in expected
-    assert "store_true" in expected
-    assert "store_false" in expected
-    assert help in expected
+    code = "\n".join(actual["blocks"])
+
+    assert f"-{short}" in code
+    assert f"-{short.upper()}" in code
+    assert f"--{long}" in code
+    assert f"--no-{long}" in code
+    assert dest in code
+    assert "store_true" in code
+    assert "store_false" in code
+    assert help in code
+
+
+def test__generate_loader():
+    """Generate the loader."""
+    actual = elective._generate_loader()
+    expected = """\
+def load(argv=None):
+    \"\"\"Load the configuration.\"\"\"
+    args = _create_argument_parser().parse_args(argv)
+
+    return args
+"""
+    assert actual["blocks"][0] == expected

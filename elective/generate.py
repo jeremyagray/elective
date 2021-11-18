@@ -135,6 +135,21 @@ class _show_{name.lower()}_action(argparse.Action):
     }
 
 
+def _generate_loader():
+    """Generate the load configuration function."""
+    block = """\
+def load(argv=None):
+    \"\"\"Load the configuration.\"\"\"
+    args = _create_argument_parser().parse_args(argv)
+
+    return args
+"""
+
+    return {
+        "blocks": [block],
+    }
+
+
 def generate(conf=None):
     """Generate a configuration loader."""
     module = ""
@@ -221,14 +236,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
     module += warranty["classes"][0]
     module += license["classes"][0]
-    module += """\
 
-
-def load(argv=None):
-    \"\"\"Load the configuration.\"\"\"
-    args = _create_argument_parser().parse_args(argv)
-
-    return args
-"""
+    module += "\n\n\n" + _generate_loader()["blocks"][0]
 
     return module
