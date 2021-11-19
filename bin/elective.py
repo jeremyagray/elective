@@ -11,7 +11,7 @@ import elective  # noqa: E402
 def main(argv=None):
     """Generate a new configurator."""
     try:
-        conf = elective.load(argv)
+        conf = elective._load_toml_file(sys.argv[1])
         print(elective.generate(conf))
         sys.exit(0)
     except Exception as error:

@@ -3,72 +3,6 @@
 import argparse
 
 
-def _create_argument_parser():
-    """Create an argparse argument parser."""
-    parser = argparse.ArgumentParser(
-        description="""\
-This program comes with ABSOLUTELY NO WARRANTY; for details type
-``elective --show-warranty``.  This is free software, and you are welcome
-to redistribute it under certain conditions; type ``elective
---show-license`` for details.
-
-""",
-    )
-
-    parser.add_argument(
-        "--show-warranty",
-        nargs=0,
-        action=_show_warranty_action,
-        help="Show warranty.",
-    )
-    parser.add_argument(
-        "--show-license",
-        nargs=0,
-        action=_show_license_action,
-        help="Show license.",
-    )
-    spell_check_group = parser.add_mutually_exclusive_group()
-    spell_check_group.add_argument(
-        "-c",
-        "--spell-check",
-        dest="spell_check",
-        default=None,
-        action="store_true",
-        help="Spell check the commit.  Default is no spell checking.",
-    )
-    spell_check_group.add_argument(
-        "-C",
-        "--no-spell-check",
-        dest="spell_check",
-        default=None,
-        action="store_false",
-        help="Spell check the commit.  Default is no spell checking.",
-    )
-
-    return parser
-
-
-class _show_warranty_action(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        print(
-            """\
-elective:  a Python configuration loader generator.
-
-Copyright 2021 Jeremy A Gray <gray@flyquackswim.com>.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-"""
-        )
-
-        parser.exit(status=0)
-
-
 class _show_license_action(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         print(
@@ -99,6 +33,71 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         )
 
         parser.exit(status=0)
+
+
+class _show_warranty_action(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        print(
+            """\
+elective:  a Python configuration loader generator.
+
+Copyright 2021 Jeremy A Gray <gray@flyquackswim.com>.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+"""
+        )
+
+        parser.exit(status=0)
+
+
+def _create_argument_parser():
+    """Create an argparse argument parser."""
+    parser = argparse.ArgumentParser(
+        description="""\
+This program comes with ABSOLUTELY NO WARRANTY; for details type
+``elective --show-warranty``.  This is free software, and you are welcome
+to redistribute it under certain conditions; type ``elective
+--show-license`` for details.
+
+""",
+    )
+    spell_check_group = parser.add_mutually_exclusive_group()
+    spell_check_group.add_argument(
+        "-c",
+        "--spell-check",
+        dest="spell_check",
+        default=None,
+        action="store_true",
+        help="Spell check.  Default is no spell checking.",
+    )
+    spell_check_group.add_argument(
+        "-C",
+        "--no-spell-check",
+        dest="spell_check",
+        default=None,
+        action="store_false",
+        help="Spell check.  Default is no spell checking.",
+    )
+    parser.add_argument(
+        "--show-license",
+        nargs=0,
+        action=_show_license_action,
+        help="Show license.",
+    )
+    parser.add_argument(
+        "--show-warranty",
+        nargs=0,
+        action=_show_warranty_action,
+        help="Show warranty.",
+    )
+
+    return parser
 
 
 def load(argv=None):
