@@ -37,6 +37,29 @@ def _are_keys_indices(d):
     return True
 
 
+def _is_listdict(d):
+    """Determine if the keys of a dict are list indices."""
+    # All integers?
+    keys = []
+    for k in d.keys():
+        try:
+            keys.append(int(k))
+        except (ValueError):
+            return False
+
+    keys = sorted(keys)
+
+    # Zero start?
+    if min(keys) != 0:
+        return False
+
+    # Consecutive?
+    if keys != list(range(0, max(keys) + 1)):
+        return False
+
+    return True
+
+
 def _convert_dict_to_list(d):
     """Convert a list-style dict to a list."""
     keys = sorted(d.keys())
@@ -119,6 +142,35 @@ def load_env(prefix, separator="__"):
                 sub_config[keys[-1]] = value
 
     return _convert_listdict_to_list(config)
+
+
+def process_checks(name, conf):
+    """Check validity of an environment variable in a configuration dict."""
+    key = name.upper()
+
+    try:
+        conf[key]
+        return key
+    except KeyError:
+        return None
+
+
+def process_boolean(name, conf):
+    """Process and validate a boolean environment variable."""
+    key = process_checks(name, conf)
+
+    print(key)
+    if not key:
+        return None
+
+    if key.startswith("NO_"):
+        if conf[key] == "true" or conf[key] == "yes" or conf[key] == "1":
+            return False
+        return True
+
+    if conf[key] == "true" or conf[key] == "yes" or conf[key] == "1":
+        return True
+    return False
 
 
 def dump_env(config, prefix, export=True):
