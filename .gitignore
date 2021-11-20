@@ -10,12 +10,15 @@
 
 # Emacs.
 *~
+.dir-locals.el
 
 # Python.
 *.egg-info
 *.pyc
 .coverage
+.hypothesis
 .pytest_cache
+.python-version
 .tox
 __pycache__
 build
