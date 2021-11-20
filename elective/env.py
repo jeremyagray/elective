@@ -208,6 +208,24 @@ def process_float(name, conf):
         return None
 
 
+def process_list(name, conf):
+    """Process and validate a list environment variable set.
+
+    Caller is responsible for any type validation of the contents of
+    the list.
+    """
+    key = process_checks(name, conf)
+
+    if not key:
+        return None
+
+    data = conf[key]
+    if isinstance(data, list):
+        return data
+
+    return None
+
+
 def dump_env(config, prefix, export=True):
     """Dump configuration as environment variable strings.
 

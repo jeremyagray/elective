@@ -16,6 +16,7 @@ from .env import load_env
 from .env import process_boolean
 from .env import process_float
 from .env import process_integer
+from .env import process_list
 from .env import process_string
 from .files import _load_toml_file
 from .generate import _generate_argparse_boolean

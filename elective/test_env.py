@@ -144,3 +144,39 @@ def test__load_env_non_float(monkeypatch):
     conf = elective.load_env(prefix="ELECTIVE_TEST_")
 
     assert elective.process_float("num", conf) is None
+
+
+def test__load_env_list(monkeypatch):
+    """Should load a list variable from the environment."""
+    monkeypatch.setenv("ELECTIVE_TEST_LIST__0", "0")
+    monkeypatch.setenv("ELECTIVE_TEST_LIST__1", "1")
+    monkeypatch.setenv("ELECTIVE_TEST_LIST__2", "2")
+    monkeypatch.setenv("ELECTIVE_TEST_LIST__3", "3")
+
+    conf = elective.load_env(prefix="ELECTIVE_TEST_")
+
+    assert elective.process_list("list", conf) == ["0", "1", "2", "3"]
+
+
+def test__load_env_missing_list(monkeypatch):
+    """Should handle missing integer variables from the environment."""
+    monkeypatch.setenv("ELECTIVE_TEST_LIST__0", "0")
+    monkeypatch.setenv("ELECTIVE_TEST_LIST__1", "1")
+    monkeypatch.setenv("ELECTIVE_TEST_LIST__2", "2")
+    monkeypatch.setenv("ELECTIVE_TEST_LIST__3", "3")
+
+    conf = elective.load_env(prefix="ELECTIVE_TEST_")
+
+    assert elective.process_list("bar", conf) is None
+
+
+def test__load_env_non_list(monkeypatch):
+    """Should handle non-float variables from the environment."""
+    monkeypatch.setenv("ELECTIVE_TEST_LIST__0", "0")
+    monkeypatch.setenv("ELECTIVE_TEST_LIST__1", "1")
+    monkeypatch.setenv("ELECTIVE_TEST_LIST__2", "2")
+    monkeypatch.setenv("ELECTIVE_TEST_LIST__4", "4")
+
+    conf = elective.load_env(prefix="ELECTIVE_TEST_")
+
+    assert elective.process_list("list", conf) is None
