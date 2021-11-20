@@ -81,3 +81,32 @@ def test__load_env_bad_string(monkeypatch):
     conf = elective.load_env(prefix="ELECTIVE_TEST_")
 
     assert elective.process_string("bar", conf) is None
+
+
+@given(
+    val=st.integers(),
+)
+def test__load_env_integer(val):
+    """Should load a integer variable from the environment."""
+    with pytest.MonkeyPatch().context() as mp:
+        mp.setenv("ELECTIVE_TEST_NUM", str(val))
+        conf = elective.load_env(prefix="ELECTIVE_TEST_")
+        assert elective.process_integer("num", conf) == val
+
+
+def test__load_env_missing_integer(monkeypatch):
+    """Should handle missing integer variables from the environment."""
+    monkeypatch.setenv("ELECTIVE_TEST_NUM", "314")
+
+    conf = elective.load_env(prefix="ELECTIVE_TEST_")
+
+    assert elective.process_integer("bar", conf) is None
+
+
+def test__load_env_non_integer(monkeypatch):
+    """Should handle non-integer variables from the environment."""
+    monkeypatch.setenv("ELECTIVE_TEST_NUM", "3.14")
+
+    conf = elective.load_env(prefix="ELECTIVE_TEST_")
+
+    assert elective.process_integer("num", conf) is None

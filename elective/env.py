@@ -159,7 +159,6 @@ def process_boolean(name, conf):
     """Process and validate a boolean environment variable."""
     key = process_checks(name, conf)
 
-    print(key)
     if not key:
         return None
 
@@ -183,6 +182,19 @@ def process_string(name, conf):
     try:
         return conf[key]
     except (UnicodeEncodeError, ValueError):
+        return None
+
+
+def process_integer(name, conf):
+    """Process and validate an integer environment variable."""
+    key = process_checks(name, conf)
+
+    if not key:
+        return None
+
+    try:
+        return int(conf[key])
+    except ValueError:
         return None
 
 
