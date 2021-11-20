@@ -179,10 +179,7 @@ def process_string(name, conf):
     if not key:
         return None
 
-    try:
-        return conf[key]
-    except (UnicodeEncodeError, ValueError):
-        return None
+    return conf[key]
 
 
 def process_integer(name, conf):
