@@ -226,6 +226,25 @@ def process_list(name, conf):
     return None
 
 
+def process_dict(name, conf):
+    """Process and validate a dict environment variable.
+
+    Caller is responsible for any type validation of the contents of
+    the dict.
+    """
+    key = process_checks(name, conf)
+
+    if not key:
+        return None
+
+    data = conf[key]
+
+    if isinstance(data, dict):
+        return data
+    else:
+        return None
+
+
 def dump_env(config, prefix, export=True):
     """Dump configuration as environment variable strings.
 

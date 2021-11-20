@@ -14,6 +14,7 @@ from .config import Config
 from .config import load
 from .env import load_env
 from .env import process_boolean
+from .env import process_dict
 from .env import process_float
 from .env import process_integer
 from .env import process_list

@@ -69,7 +69,7 @@ def test__load_env_bad_boolean(monkeypatch):
     str=st.text(alphabet=st.characters(blacklist_categories=("Cc", "Cs"))),
 )
 def test__load_env_string(str):
-    """Should load a boolean variable from the environment."""
+    """Should load a string variable from the environment."""
     with pytest.MonkeyPatch().context() as mp:
         mp.setenv("ELECTIVE_TEST_FOO", str)
         conf = elective.load_env(prefix="ELECTIVE_TEST_")
@@ -129,7 +129,7 @@ def test__load_env_float(val):
 
 
 def test__load_env_missing_float(monkeypatch):
-    """Should handle missing integer variables from the environment."""
+    """Should handle missing float variables from the environment."""
     monkeypatch.setenv("ELECTIVE_TEST_NUM", "3.14")
 
     conf = elective.load_env(prefix="ELECTIVE_TEST_")
@@ -159,7 +159,7 @@ def test__load_env_list(monkeypatch):
 
 
 def test__load_env_missing_list(monkeypatch):
-    """Should handle missing integer variables from the environment."""
+    """Should handle missing list variables from the environment."""
     monkeypatch.setenv("ELECTIVE_TEST_LIST__0", "0")
     monkeypatch.setenv("ELECTIVE_TEST_LIST__1", "1")
     monkeypatch.setenv("ELECTIVE_TEST_LIST__2", "2")
@@ -171,12 +171,55 @@ def test__load_env_missing_list(monkeypatch):
 
 
 def test__load_env_non_list(monkeypatch):
-    """Should handle non-float variables from the environment."""
-    monkeypatch.setenv("ELECTIVE_TEST_LIST__0", "0")
-    monkeypatch.setenv("ELECTIVE_TEST_LIST__1", "1")
-    monkeypatch.setenv("ELECTIVE_TEST_LIST__2", "2")
-    monkeypatch.setenv("ELECTIVE_TEST_LIST__4", "4")
+    """Should handle non-list variables from the environment."""
+    monkeypatch.setenv("ELECTIVE_TEST_DICT__ONE", "uno")
+    monkeypatch.setenv("ELECTIVE_TEST_DICT__TWO", "dos")
+    monkeypatch.setenv("ELECTIVE_TEST_DICT__THREE", "tres")
+    monkeypatch.setenv("ELECTIVE_TEST_DICT__FOUR", "cuatro")
 
     conf = elective.load_env(prefix="ELECTIVE_TEST_")
 
-    assert elective.process_list("list", conf) is None
+    assert elective.process_list("dict", conf) is None
+
+
+def test__load_env_dict(monkeypatch):
+    """Should load a dict variable from the environment."""
+    monkeypatch.setenv("ELECTIVE_TEST_DICT__ONE", "uno")
+    monkeypatch.setenv("ELECTIVE_TEST_DICT__TWO", "dos")
+    monkeypatch.setenv("ELECTIVE_TEST_DICT__THREE", "tres")
+    monkeypatch.setenv("ELECTIVE_TEST_DICT__FOUR", "cuatro")
+
+    conf = elective.load_env(prefix="ELECTIVE_TEST_")
+    actual = elective.process_dict("dict", conf)
+    expected = {
+        "ONE": "uno",
+        "TWO": "dos",
+        "THREE": "tres",
+        "FOUR": "cuatro",
+    }
+
+    assert actual == expected
+
+
+def test__load_env_missing_dict(monkeypatch):
+    """Should handle missing dict variables from the environment."""
+    monkeypatch.setenv("ELECTIVE_TEST_DICT__ONE", "uno")
+    monkeypatch.setenv("ELECTIVE_TEST_DICT__TWO", "dos")
+    monkeypatch.setenv("ELECTIVE_TEST_DICT__THREE", "tres")
+    monkeypatch.setenv("ELECTIVE_TEST_DICT__FOUR", "cuatro")
+
+    conf = elective.load_env(prefix="ELECTIVE_TEST_")
+
+    assert elective.process_dict("bar", conf) is None
+
+
+def test__load_env_non_dict(monkeypatch):
+    """Should handle non-dict variables from the environment."""
+    monkeypatch.setenv("ELECTIVE_TEST_DICT__0", "0")
+    monkeypatch.setenv("ELECTIVE_TEST_DICT__1", "1")
+    monkeypatch.setenv("ELECTIVE_TEST_DICT__2", "2")
+    monkeypatch.setenv("ELECTIVE_TEST_DICT__3", "3")
+
+    conf = elective.load_env(prefix="ELECTIVE_TEST_")
+
+    assert elective.process_dict("dict", conf) is None
