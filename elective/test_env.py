@@ -11,6 +11,8 @@
 """elective environment utility tests."""
 
 import pytest
+from hypothesis import given
+from hypothesis import strategies as st
 
 import elective
 
@@ -59,3 +61,23 @@ def test__load_env_bad_boolean(monkeypatch):
     conf = elective.load_env(prefix="ELECTIVE_TEST_")
 
     assert elective.process_boolean("bob", conf) is None
+
+
+@given(
+    str=st.text(alphabet=st.characters(blacklist_categories=("Cc", "Cs"))),
+)
+def test__load_env_string(str):
+    """Should load a boolean variable from the environment."""
+    with pytest.MonkeyPatch().context() as mp:
+        mp.setenv("ELECTIVE_TEST_FOO", str)
+        conf = elective.load_env(prefix="ELECTIVE_TEST_")
+        assert elective.process_string("foo", conf) == str
+
+
+def test__load_env_bad_string(monkeypatch):
+    """Should handle bad string variables from the environment."""
+    monkeypatch.setenv("ELECTIVE_TEST_FOO", "bar")
+
+    conf = elective.load_env(prefix="ELECTIVE_TEST_")
+
+    assert elective.process_string("bar", conf) is None

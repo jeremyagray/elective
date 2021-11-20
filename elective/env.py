@@ -173,6 +173,19 @@ def process_boolean(name, conf):
     return False
 
 
+def process_string(name, conf):
+    """Process and validate a string environment variable."""
+    key = process_checks(name, conf)
+
+    if not key:
+        return None
+
+    try:
+        return conf[key]
+    except (UnicodeEncodeError, ValueError):
+        return None
+
+
 def dump_env(config, prefix, export=True):
     """Dump configuration as environment variable strings.
 
