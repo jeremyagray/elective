@@ -195,6 +195,19 @@ def process_integer(name, conf):
         return None
 
 
+def process_float(name, conf):
+    """Process and validate a float environment variable."""
+    name = process_checks(name, conf)
+
+    if not name:
+        return None
+
+    try:
+        return float(conf[name])
+    except ValueError:
+        return None
+
+
 def dump_env(config, prefix, export=True):
     """Dump configuration as environment variable strings.
 

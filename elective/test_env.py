@@ -10,6 +10,8 @@
 
 """elective environment utility tests."""
 
+import math
+
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
@@ -110,3 +112,35 @@ def test__load_env_non_integer(monkeypatch):
     conf = elective.load_env(prefix="ELECTIVE_TEST_")
 
     assert elective.process_integer("num", conf) is None
+
+
+@given(
+    val=st.floats(),
+)
+def test__load_env_float(val):
+    """Should load a float variable from the environment."""
+    with pytest.MonkeyPatch().context() as mp:
+        mp.setenv("ELECTIVE_TEST_NUM", str(val))
+        conf = elective.load_env(prefix="ELECTIVE_TEST_")
+        if math.isnan(val):
+            assert math.isnan(elective.process_float("num", conf)) is True
+        else:
+            assert elective.process_float("num", conf) == val
+
+
+def test__load_env_missing_float(monkeypatch):
+    """Should handle missing integer variables from the environment."""
+    monkeypatch.setenv("ELECTIVE_TEST_NUM", "3.14")
+
+    conf = elective.load_env(prefix="ELECTIVE_TEST_")
+
+    assert elective.process_float("bar", conf) is None
+
+
+def test__load_env_non_float(monkeypatch):
+    """Should handle non-float variables from the environment."""
+    monkeypatch.setenv("ELECTIVE_TEST_NUM", "bar")
+
+    conf = elective.load_env(prefix="ELECTIVE_TEST_")
+
+    assert elective.process_float("num", conf) is None
