@@ -19,8 +19,10 @@ def _process_single_option(option):
     cleaned["type"] = option.get("type", None)
     cleaned["providers"] = option.get("providers", None)
     cleaned["default"] = option.get("default", None)
-    cleaned["short"] = option.get("short", None)
-    cleaned["long"] = option.get("long", None)
+    cleaned["short_pos"] = option.get("short_pos", None)
+    cleaned["long_pos"] = option.get("long_pos", None)
+    cleaned["short_neg"] = option.get("short_neg", None)
+    cleaned["long_neg"] = option.get("long_neg", None)
     cleaned["help"] = option.get("help", None)
     cleaned["dest"] = option.get("dest", None)
 

@@ -86,20 +86,10 @@ providers = [
   "env",
   "file",
 ]
-# Validate as valid type.
 type = "boolean"
-# Validate default based on type.
 default = false
-# Use default generation algorithm, lower case.
-short_option = "c"
-# Default should be upper case positive short.
-# short_negative = "C"
-# Generate from name; spaces/punctuation to dashes.
-# long_option = "spell-check"
-# Prepend "--no-" to positive base.
-# long_negative = "--no-spell-check"
-# Generate from name; spaces/punctuation to underscores.
-# destination = "spell_check"
-# Generate default from name and default value,
-# like "{name}:  {default}"
+short_pos = "c"
+short_neg = "C"
+long_pos = "spell-check"
+long_neg = "no-spell-check"
 help = "Spell check.  Default is no spell checking."

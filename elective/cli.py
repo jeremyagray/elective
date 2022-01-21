@@ -31,6 +31,15 @@ class ClientParser:
                         default=v["default"],
                         help=v["help"],
                     )
+                elif v["type"] == "boolean":
+                    self.register_boolean_group(
+                        dest=v["dest"],
+                        help=v["help"],
+                        short_pos=v["short_pos"],
+                        short_neg=v["short_neg"],
+                        long_pos=v["long_pos"],
+                        long_neg=v["long_neg"],
+                    )
 
     def set_description(self, description):
         """Set the argparse description."""
@@ -54,21 +63,28 @@ class ClientParser:
     def register_boolean_group(self, **kwargs):
         """Register a mutually exclusive boolean group in the parser."""
         group = self.parser.add_mutually_exclusive_group()
+        dest = kwargs.get("dest", None)
+        help = kwargs.get("help", None)
+        short_pos = "-" + kwargs.get("short_pos", None)
+        short_neg = "-" + kwargs.get("short_neg", None)
+        long_pos = "--" + kwargs.get("long_pos", None)
+        long_neg = "--" + kwargs.get("long_neg", None)
+
         group.add_argument(
-            "-{kwargs.get('short', None)}",
-            "--{kwargs.get('long', None)}",
-            dest=kwargs.get("dest", None),
+            short_pos,
+            long_pos,
+            dest=dest,
             default=None,
             action="store_true",
-            help=kwargs.get("help", None),
+            help=help,
         )
         group.add_argument(
-            "-{kwargs.get('short', None)}",
-            "--{kwargs.get('long', None)}",
-            dest=kwargs.get("dest", None),
+            short_neg,
+            long_neg,
+            dest=dest,
             default=None,
             action="store_false",
-            help=kwargs.get("help", None),
+            help=help,
         )
 
     def register_display_action(self, line_length=72, **kwargs):
