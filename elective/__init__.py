@@ -2,7 +2,7 @@
 #
 # elective:  a Python configuration loader generator
 #
-# Copyright 2021 Jeremy A Gray <gray@flyquackswim.com>.
+# Copyright 2021-2022 Jeremy A Gray <gray@flyquackswim.com>.
 #
 # SPDX-License-Identifier: MIT
 #
@@ -10,8 +10,7 @@
 
 """elective:  a Python configuration loader generator."""
 
-from .config import Config
-from .config import load
+from .config import ElectiveConfig
 from .env import load_env
 from .env import process_boolean
 from .env import process_dict

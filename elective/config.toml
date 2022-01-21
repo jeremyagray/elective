@@ -1,3 +1,5 @@
+[elective]
+
 description = '''
 This program comes with ABSOLUTELY NO WARRANTY; for details type
 ``elective --show-warranty``.  This is free software, and you are welcome
@@ -7,10 +9,10 @@ to redistribute it under certain conditions; type ``elective
 
 # Environment prefix should have a sensible generated default of
 # f"ELECTIVE_{sys.argv[0].rstrip('.py').upper()}_"
-env-prefix = "ELECTIVE_ELECTIVE_"
+prefix = "ELECTIVE_ELECTIVE_"
 
-# ("left-merge" | "right-merge" | "join")
-combination = "right-merge"
+# ("left_merge" | "right_merge" | "join")
+combine = "right_merge"
 
 order = [
   "default",
@@ -22,19 +24,18 @@ order = [
   "cli",
 ]
 
-[option]
+[elective.options]
 
-[option.license]
+[elective.options.show-license]
 
 providers = [
   "cli",
 ]
 type = "display"
-long = "show-license"
-message = '''
+help = '''
 elective:  a Python configuration loader generator.
 
-Copyright 2021 Jeremy A Gray <gray@flyquackswim.com>.
+Copyright 2021-2022 Jeremy A Gray <gray@flyquackswim.com>.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -56,17 +57,16 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 '''
 
-[option.warranty]
+[elective.options.show-warranty]
 
 providers = [
   "cli",
 ]
 type = "display"
-long = "show-warranty"
-message = '''
+help = '''
 elective:  a Python configuration loader generator.
 
-Copyright 2021 Jeremy A Gray <gray@flyquackswim.com>.
+Copyright 2021-2022 Jeremy A Gray <gray@flyquackswim.com>.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
@@ -77,7 +77,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 '''
 
-[option.spell-check]
+[elective.options.spell-check]
 
 providers = [
   "cli",
@@ -89,15 +89,15 @@ type = "boolean"
 # Validate default based on type.
 default = false
 # Use default generation algorithm, lower case.
-short = "c"
+short_option = "c"
 # Default should be upper case positive short.
 # short_negative = "C"
 # Generate from name; spaces/punctuation to dashes.
-long = "spell-check"
+# long_option = "spell-check"
 # Prepend "--no-" to positive base.
 # long_negative = "--no-spell-check"
 # Generate from name; spaces/punctuation to underscores.
-destination = "spell_check"
+# destination = "spell_check"
 # Generate default from name and default value,
 # like "{name}:  {default}"
 help = "Spell check.  Default is no spell checking."

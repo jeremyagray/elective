@@ -2,7 +2,7 @@
 #
 # elective:  a Python configuration loader generator
 #
-# Copyright 2021 Jeremy A Gray <gray@flyquackswim.com>.
+# Copyright 2021-2022 Jeremy A Gray <gray@flyquackswim.com>.
 #
 # SPDX-License-Identifier: MIT
 #
@@ -26,11 +26,10 @@ def _load_toml_file(fn, section=None, raise_on_error=True):
     fn : string
         TOML file to load.
     section : string
-        Optional section of the file to load, as in a ``tool`` section
-        of a ``pyproject.toml`` file.
+        Optional section of the file to load.
     raise_on_error : boolean
         Raise exception on error, or fail silently and return an empty
-        dict.  Devault is ``True``.
+        dict.  Default is ``True``.
 
     Returns
     -------
