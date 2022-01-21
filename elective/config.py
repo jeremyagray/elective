@@ -17,6 +17,7 @@ def _process_single_option(option):
     """Process a single option."""
     cleaned = {}
     cleaned["type"] = option.get("type", None)
+    cleaned["providers"] = option.get("providers", None)
     cleaned["default"] = option.get("default", None)
     cleaned["short"] = option.get("short", None)
     cleaned["long"] = option.get("long", None)

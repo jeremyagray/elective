@@ -10,6 +10,7 @@
 
 """elective:  a Python configuration loader generator."""
 
+from .cli import ClientParser
 from .config import ElectiveConfig
 from .env import load_env
 from .env import process_boolean
