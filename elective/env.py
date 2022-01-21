@@ -245,6 +245,27 @@ def process_dict(name, conf):
         return None
 
 
+def process_conf(vars, conf):
+    """Process and return a configuration dict."""
+    filtered = {}
+
+    for (name, kind) in vars:
+        if kind == "boolean":
+            filtered[name] = process_boolean(conf)
+        elif kind == "string":
+            filtered[name] = process_string(conf)
+        elif kind == "int":
+            filtered[name] = process_integer(conf)
+        elif kind == "float":
+            filtered[name] = process_float(conf)
+        # elif kind == "list":
+        #     filtered[name] = process_list(name, conf)
+        # elif kind == "dict":
+        #     filtered[name] = process_dict(name, conf)
+
+    return filtered
+
+
 def dump_env(config, prefix, export=True):
     """Dump configuration as environment variable strings.
 
