@@ -2,7 +2,7 @@
 ..
 .. elective:  a Python configuration loader generator
 ..
-.. Copyright 2021 Jeremy A Gray <gray@flyquackswim.com>.
+.. Copyright 2021-2022 Jeremy A Gray <gray@flyquackswim.com>.
 ..
 .. SPDX-License-Identifier: MIT
 ..
@@ -11,7 +11,7 @@
 elective
 --------
 
-A configuration option loader for python.
+A `Python`_ configuration loader generator.
 
 .. image:: https://badge.fury.io/py/elective.svg
    :target: https://badge.fury.io/py/elective
@@ -23,10 +23,10 @@ A configuration option loader for python.
 What is elective?
 ~~~~~~~~~~~~~~~~~
 
-``elective`` is a Python program configuration loader generator that
+``elective`` is a `Python`_ program configuration loader generator that
 can leverage environment variables, configuration files (TOML, JSON,
 YAML, BespON), and the command line (via ``argparse``) to generate a
-custom loader module to use in your Python application with a goal of
+custom loader module to use in your `Python`_ application with a goal of
 being able to specify any configurable option identically via any
 generation method.  ``elective`` supports customization of the
 providers file formats and of the method of combining the results from
@@ -78,12 +78,11 @@ See the source and `documentation
 Copyright and License
 =====================
 
-SPDX-License-Identifier: `MIT <https://spdx.org/licenses/MTI.html>`_
+SPDX-License-Identifier: `MIT`_
 
-django-loader:  a configuration variable and secrets loader for Django
-apps.
+elective, a `Python`_ configuration loader generator.
 
-Copyright (C) 2021 `Jeremy A Gray <gray@flyquackswim.com>`_.
+Copyright (C) 2021-2022 `Jeremy A Gray <gray@flyquackswim.com>`_.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -107,4 +106,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 Author
 ~~~~~~
 
-`Jeremy A Gray <jeremy.a.gray@gmail.com>`_
+`Jeremy A Gray <gray@flyquackswim.com>`_.
+
+.. _MIT: https://spdx.org/licenses/MIT.html
+.. _Python: https://www.python.org/
