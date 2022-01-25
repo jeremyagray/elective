@@ -12,6 +12,8 @@
 
 from .cli import ClientParser
 from .config import ElectiveConfig
+from .config import _process_option
+from .config import _process_single_option
 from .env import load_env
 from .env import process_boolean
 from .env import process_dict

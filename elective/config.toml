@@ -93,3 +93,18 @@ short_neg = "C"
 long_pos = "spell-check"
 long_neg = "no-spell-check"
 help = "Spell check.  Default is no spell checking."
+
+[elective.options.line-wrap]
+
+providers = [
+  "cli",
+  "env",
+  "file",
+]
+type = "boolean"
+default = false
+short_pos = "w"
+short_neg = "W"
+long_pos = "wrap"
+long_neg = "no-wrap"
+help = "Wrap lines.  Default is no line wrapping."
