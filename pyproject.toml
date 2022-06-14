@@ -55,30 +55,30 @@ spell_check = false
 repair = false
 
 types = [
-"build",
-"ci",
-"depends",
-"docs",
-"feat",
-"fix",
-"perf",
-"refactor",
-"release",
-"style",
-"test"
+  "depends",
+  "doc",
+  "feat",
+  "fix",
+  "perf",
+  "refactor",
+  "release",
+  "style",
+  "test",
 ]
 
 scopes = [
-"cli",
-"mod",
+  "cli",
+  "module",
+  "tooling",
 ]
 
 footers = [
-"signed-off-by"
+  "github-closes",
+  "signed-off-by",
 ]
 
 required_footers = [
-"signed-off-by"
+  "signed-off-by",
 ]
 
 [tool.poetry]
