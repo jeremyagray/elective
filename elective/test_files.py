@@ -27,7 +27,7 @@ def test_load_toml_file_no_file():
 
     assert actual == expected
 
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(elective.ElectiveFileLoadingError):
         elective.load_toml_file("")
 
 
@@ -44,7 +44,8 @@ def test_load_toml_file_bad_file(fs):
 
     assert actual == expected
 
-    with pytest.raises(toml.TomlDecodeError):
+    # with pytest.raises(toml.TomlDecodeError):
+    with pytest.raises(elective.ElectiveFileLoadingError):
         elective.load_toml_file(fn)
 
 
@@ -97,7 +98,7 @@ def test_load_json_file_no_file():
 
     assert actual == expected
 
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(elective.ElectiveFileLoadingError):
         elective.load_json_file("")
 
 
@@ -114,7 +115,8 @@ def test_load_json_file_bad_file(fs):
 
     assert actual == expected
 
-    with pytest.raises(json.JSONDecodeError):
+    # with pytest.raises(json.JSONDecodeError):
+    with pytest.raises(elective.ElectiveFileLoadingError):
         elective.load_json_file(fn)
 
 
@@ -168,7 +170,7 @@ def test_load_bespon_file_no_file():
 
     assert actual == expected
 
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(elective.ElectiveFileLoadingError):
         elective.load_bespon_file("")
 
 
@@ -185,7 +187,8 @@ def test_load_bespon_file_bad_file(fs):
 
     assert actual == expected
 
-    with pytest.raises(bespon.erring.DecodingException):
+    # with pytest.raises(bespon.erring.DecodingException):
+    with pytest.raises(elective.ElectiveFileLoadingError):
         elective.load_bespon_file(fn)
 
 
@@ -238,7 +241,7 @@ def test_load_yaml_file_no_file():
 
     assert actual == expected
 
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(elective.ElectiveFileLoadingError):
         elective.load_yaml_file("")
 
 
@@ -261,7 +264,8 @@ def test_load_yaml_file_bad_file(fs):
 
     assert actual == expected
 
-    with pytest.raises(YAMLError):
+    # with pytest.raises(YAMLError):
+    with pytest.raises(elective.ElectiveFileLoadingError):
         elective.load_yaml_file(fn)
 
 

@@ -18,6 +18,8 @@ import toml
 from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
 
+from .exceptions import ElectiveFileLoadingError
+
 
 def _load_file(
     fn,
@@ -52,18 +54,14 @@ def _load_file(
 
     Raises
     ------
-    Exception
-        Raised if there are problems decoding the configuration file.
-        The exact exception depends upon the function provided, but
-        should be something like ``toml.TomlDecodeError``.
-    FileNotFoundError
-        Raised if the configuration file does not exist or is not
-        readable.
+    elective.ElectiveFileLoadingError
+        Raised if the configuration file does not exist, is not
+        readable, or is not parsable for a given format.
     """
     # Check if ``fn`` is a file.  Raise or return if not.
     if not Path(fn).is_file():
         if raise_on_error:
-            raise FileNotFoundError
+            raise ElectiveFileLoadingError(f"file {fn} not found")
         else:
             return {}
 
@@ -81,7 +79,7 @@ def _load_file(
 
     except (decode_exc, FileNotFoundError) as error:
         if raise_on_error:
-            raise error
+            raise ElectiveFileLoadingError(str(error))
         else:
             return {}
 
