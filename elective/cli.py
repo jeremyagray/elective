@@ -8,14 +8,14 @@
 #
 # ******************************************************************************
 
-"""CLI argument parser."""
+"""CLI loader."""
 
 import argparse
 import textwrap
 
 
-class ClientParser:
-    """Argument parser for the client program."""
+class CliLoader:
+    """CLI loader for the client program."""
 
     def __init__(self):
         """Initialize a client argument parser."""
