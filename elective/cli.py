@@ -41,6 +41,11 @@ class CliLoader:
                         long_neg=v["long_neg"],
                     )
 
+    def load(self, argv=None):
+        """Load CLI arguments."""
+        # Convert the argparse `Namespace()` object to a dict.
+        self.options = vars(self.parser.parse_args(args=None))
+
     def set_description(self, description):
         """Set the argparse description."""
         self.parser.description = description
