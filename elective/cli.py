@@ -21,9 +21,9 @@ class CliLoader:
         """Initialize a client argument parser."""
         self.parser = argparse.ArgumentParser()
 
-    def config(self, conf):
+    def config(self, ec):
         """Configure a client argument parser."""
-        for (k, v) in conf["options"].items():
+        for (k, v) in ec.options.items():
             if "cli" in v["providers"]:
                 if v["type"] == "display":
                     self.register_display_action(

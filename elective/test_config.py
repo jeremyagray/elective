@@ -42,7 +42,7 @@ to redistribute it under certain conditions; type ``elective
 --show-license`` for details.
 '''
 
-prefix = "ELECTIVE_ELECTIVE_"
+name = "elective"
 
 combine = "booyah"
 
@@ -60,7 +60,7 @@ order = [
 
     conf = elective.ElectiveConfig()
     with pytest.raises(ValueError):
-        conf.load(fn)
+        conf.load_elective_config(fn)
 
 
 def test_elective_config_load_combine(fs):
@@ -79,9 +79,9 @@ to redistribute it under certain conditions; type ``elective
 --show-license`` for details.
 '''
 
-prefix = "ELECTIVE_ELECTIVE_"
+name = "elective"
 
-combine = "left_merge"
+combine = "left"
 
 order = [
   "default",
@@ -96,8 +96,8 @@ order = [
         )
 
     conf = elective.ElectiveConfig()
-    conf.load(fn)
-    assert conf.options["combine"] == "left_merge"
+    conf.load_elective_config(fn)
+    assert conf.elective["combine"] == "left"
 
     with open(fn, "w") as f:
         f.write(
@@ -110,9 +110,9 @@ to redistribute it under certain conditions; type ``elective
 --show-license`` for details.
 '''
 
-prefix = "ELECTIVE_ELECTIVE_"
+name = "elective"
 
-combine = "right_merge"
+combine = "right"
 
 order = [
   "default",
@@ -127,8 +127,8 @@ order = [
         )
 
     conf = elective.ElectiveConfig()
-    conf.load(fn)
-    assert conf.options["combine"] == "right_merge"
+    conf.load_elective_config(fn)
+    assert conf.elective["combine"] == "right"
 
     with open(fn, "w") as f:
         f.write(
@@ -141,9 +141,7 @@ to redistribute it under certain conditions; type ``elective
 --show-license`` for details.
 '''
 
-prefix = "ELECTIVE_ELECTIVE_"
-
-combine = "join"
+name = "elective"
 
 order = [
   "default",
@@ -158,37 +156,8 @@ order = [
         )
 
     conf = elective.ElectiveConfig()
-    conf.load(fn)
-    assert conf.options["combine"] == "join"
-
-    with open(fn, "w") as f:
-        f.write(
-            """[elective]
-
-description = '''
-This program comes with ABSOLUTELY NO WARRANTY; for details type
-``elective --show-warranty``.  This is free software, and you are welcome
-to redistribute it under certain conditions; type ``elective
---show-license`` for details.
-'''
-
-prefix = "ELECTIVE_ELECTIVE_"
-
-order = [
-  "default",
-  "toml",
-  "json",
-  "yaml",
-  "bespon",
-  "env",
-  "cli",
-]
-"""
-        )
-
-    conf = elective.ElectiveConfig()
-    conf.load(fn)
-    assert conf.options["combine"] is None
+    conf.load_elective_config(fn)
+    assert conf.elective["combine"] is None
 
 
 def test_elective_config_load_prefix(fs):
@@ -207,38 +176,9 @@ to redistribute it under certain conditions; type ``elective
 --show-license`` for details.
 '''
 
-prefix = "ELECTIVE_ELECTIVE_"
+name = "elective"
 
-combine = "left_merge"
-
-order = [
-  "default",
-  "toml",
-  "json",
-  "yaml",
-  "bespon",
-  "env",
-  "cli",
-]
-"""
-        )
-
-    conf = elective.ElectiveConfig()
-    conf.load(fn)
-    assert conf.options["prefix"] == "ELECTIVE_ELECTIVE_"
-
-    with open(fn, "w") as f:
-        f.write(
-            """[elective]
-
-description = '''
-This program comes with ABSOLUTELY NO WARRANTY; for details type
-``elective --show-warranty``.  This is free software, and you are welcome
-to redistribute it under certain conditions; type ``elective
---show-license`` for details.
-'''
-
-combine = "right_merge"
+combine = "left"
 
 order = [
   "default",
@@ -253,8 +193,8 @@ order = [
         )
 
     conf = elective.ElectiveConfig()
-    conf.load(fn)
-    assert conf.options["prefix"] is None
+    conf.load_elective_config(fn)
+    assert conf.elective["prefix"] == "ELECTIVE_ELECTIVE_"
 
 
 def test_elective_config_load_description(fs):
@@ -273,9 +213,8 @@ to redistribute it under certain conditions; type ``elective
 --show-license`` for details.
 '''
 
-prefix = "ELECTIVE_ELECTIVE_"
-
-combine = "left_merge"
+name = "elective"
+combine = "left"
 
 order = [
   "default",
@@ -296,13 +235,14 @@ to redistribute it under certain conditions; type ``elective
 """
 
     conf = elective.ElectiveConfig()
-    conf.load(fn)
-    assert conf.options["description"] == description
+    conf.load_elective_config(fn)
+    assert conf.elective["description"] == description
 
     with open(fn, "w") as f:
         f.write(
             """[elective]
-combine = "right_merge"
+name = "elective"
+combine = "right"
 
 order = [
   "default",
@@ -317,8 +257,8 @@ order = [
         )
 
     conf = elective.ElectiveConfig()
-    conf.load(fn)
-    assert conf.options["description"] is None
+    conf.load_elective_config(fn)
+    assert conf.elective["description"] is None
 
 
 def test__process_single_option_idempotent():
@@ -339,7 +279,7 @@ def test__process_single_option_idempotent():
         "dest": "spell",
     }
 
-    assert options == elective._process_single_option(options)
+    assert options == elective.ElectiveConfig._process_single_option(options)
 
 
 def test__process_single_option_missing_is_none():
@@ -374,7 +314,7 @@ def test__process_single_option_missing_is_none():
         "dest": "spell",
     }
 
-    assert cleaned == elective._process_single_option(options)
+    assert cleaned == elective.ElectiveConfig._process_single_option(options)
 
 
 def test__process_single_option_extra_is_ignored():
@@ -411,7 +351,7 @@ def test__process_single_option_extra_is_ignored():
         "dest": "spell",
     }
 
-    assert cleaned == elective._process_single_option(options)
+    assert cleaned == elective.ElectiveConfig._process_single_option(options)
     assert hasattr(cleaned, "yourface") is False
 
 
@@ -433,7 +373,7 @@ def test__process_option_one_idempotent():
         "dest": "spell",
     }
 
-    assert options == elective._process_option(options)
+    assert options == elective.ElectiveConfig._process_option(options)
 
 
 def test__process_option_list_idempotent():
@@ -471,7 +411,7 @@ def test__process_option_list_idempotent():
         },
     ]
 
-    assert options == elective._process_option(options)
+    assert options == elective.ElectiveConfig._process_option(options)
 
 
 def test_elective_config_load_options(fs):
@@ -490,12 +430,10 @@ to redistribute it under certain conditions; type ``elective
 --show-license`` for details.
 '''
 
-# Environment prefix should have a sensible generated default of
-# f"ELECTIVE_{sys.argv[0].rstrip('.py').upper()}_"
-prefix = "ELECTIVE_ELECTIVE_"
+name = "elective"
 
-# ("left_merge" | "right_merge" | "join")
-combine = "right_merge"
+# ("left" | "right" | None)
+combine = "right"
 
 order = [
   "default",
@@ -689,13 +627,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     }
 
     conf = elective.ElectiveConfig()
-    conf.load(fn)
+    conf.load_elective_config(fn)
 
-    assert "line-wrap" in conf.options["options"]
-    assert conf.options["options"]["line-wrap"] == options["line-wrap"]
-    assert "spell-check" in conf.options["options"]
-    assert conf.options["options"]["spell-check"] == options["spell-check"]
-    assert "show-license" in conf.options["options"]
-    assert conf.options["options"]["show-license"] == options["show-license"]
-    assert "show-warranty" in conf.options["options"]
-    assert conf.options["options"]["show-warranty"] == options["show-warranty"]
+    assert "line-wrap" in conf.options
+    assert conf.options["line-wrap"] == options["line-wrap"]
+    assert "spell-check" in conf.options
+    assert conf.options["spell-check"] == options["spell-check"]
+    assert "show-license" in conf.options
+    assert conf.options["show-license"] == options["show-license"]
+    assert "show-warranty" in conf.options
+    assert conf.options["show-warranty"] == options["show-warranty"]
