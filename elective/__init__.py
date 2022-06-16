@@ -12,7 +12,7 @@
 
 from .cli import CliLoader
 from .config import ElectiveConfig
-from .env import load_env
+from .env import EnvLoader
 from .env import process_boolean
 from .env import process_dict
 from .env import process_float
