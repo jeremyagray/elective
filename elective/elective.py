@@ -273,12 +273,18 @@ class ElectiveConfig:
         self.config = {}
 
         if self.elective["combine"] is None:
-            try:
-                self.config = opts[self.elective["order"][-1]]
-            except (KeyError):
-                pass
-        elif self.elective["combine"] == "left":
+            for source in self.elective["order"].reverse():
+                try:
+                    self.config = opts[source]
+                    break
+                except (KeyError):
+                    pass
+        else:
             final = {}
+
+            if self.elective["combine"] == "right":
+                self.elective["order"].reverse()
+
             for source in self.elective["order"]:
                 try:
                     if not final and opts[source]:
@@ -287,15 +293,5 @@ class ElectiveConfig:
                         final = ElectiveConfig._merge(final, opts[source])
                 except (KeyError):
                     pass
-            self.config = final
-        elif self.elective["combine"] == "right":
-            final = {}
-            for source in self.elective["order"].reverse():
-                try:
-                    if not final and opts[source]:
-                        final = opts[source]
-                    elif opts[source]:
-                        final = ElectiveConfig._merge(final, opts[source])
-                except (KeyError):
-                    pass
+
             self.config = final
