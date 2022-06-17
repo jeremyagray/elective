@@ -10,7 +10,7 @@
 
 """elective configuration functions."""
 
-from .cli import CliLoader
+from .cli import CliConfiguration
 from .exceptions import ElectiveFileLoadingError
 from .files import load_bespon_file
 from .files import load_json_file
@@ -185,7 +185,7 @@ class ElectiveConfig:
 
     def _load_cli_options(self):
         """Load CLI options."""
-        cli = CliLoader()
+        cli = CliConfiguration()
         cli.config(self)
         cli.load()
         return cli.options

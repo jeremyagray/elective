@@ -22,7 +22,7 @@ import elective
 )
 def test_client_parser_set_description(desc):
     """Should set the description."""
-    parser = elective.CliLoader()
+    parser = elective.CliConfiguration()
     assert parser.parser.description is None
 
     parser.set_description(desc)

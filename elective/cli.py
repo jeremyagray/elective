@@ -13,13 +13,19 @@
 import argparse
 import textwrap
 
+from .config import Configuration
 
-class CliLoader:
+
+class CliConfiguration(Configuration):
     """CLI loader for the client program."""
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         """Initialize a client argument parser."""
+        # Initialize ourself.
         self.parser = argparse.ArgumentParser()
+
+        # Call the super.
+        super().__init__(*args, **kwargs)
 
     def config(self, ec):
         """Configure a client argument parser."""
@@ -41,10 +47,13 @@ class CliLoader:
                         long_neg=v["long_neg"],
                     )
 
-    def load(self, argv=None):
+    def load(self, *args, **kwargs):
         """Load CLI arguments."""
+        # Pop our arguments.
+        argv = kwargs.pop("argv", None)
+
         # Convert the argparse `Namespace()` object to a dict.
-        self.options = vars(self.parser.parse_args(args=None))
+        self.options = vars(self.parser.parse_args(args=argv))
 
     def set_description(self, description):
         """Set the argparse description."""

@@ -17,12 +17,12 @@ from hypothesis import given
 from hypothesis import strategies as st
 
 import elective
-from elective import EnvLoader
+from elective import EnvConfiguration
 
 
 def test_load_no_env():
     """Should handle no environment."""
-    env = EnvLoader(prefix="ELECTIVE_TEST_")
+    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
     actual = env.options
     expected = {}
 
@@ -38,7 +38,7 @@ def test_load_env_boolean_true(val, monkeypatch):
     monkeypatch.setenv("ELECTIVE_TEST_CHECK", val)
     monkeypatch.setenv("ELECTIVE_TEST_NO_CHECK", val)
 
-    env = EnvLoader(prefix="ELECTIVE_TEST_")
+    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
     env.load()
 
     assert elective.process_boolean("check", env.options) is True
@@ -54,7 +54,7 @@ def test__load_env_boolean_false(val, monkeypatch):
     monkeypatch.setenv("ELECTIVE_TEST_CHECK", val)
     monkeypatch.setenv("ELECTIVE_TEST_NO_CHECK", val)
 
-    env = EnvLoader(prefix="ELECTIVE_TEST_")
+    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
     env.load()
 
     assert elective.process_boolean("check", env.options) is False
@@ -66,7 +66,7 @@ def test_load_env_bad_boolean(monkeypatch):
     monkeypatch.setenv("ELECTIVE_TEST_CHECK", "true")
     monkeypatch.setenv("ELECTIVE_TEST_NO_CHECK", "false")
 
-    env = EnvLoader(prefix="ELECTIVE_TEST_")
+    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
     env.load()
 
     assert elective.process_boolean("bob", env.options) is None
@@ -80,7 +80,7 @@ def test_load_env_string(str):
     with pytest.MonkeyPatch().context() as mp:
         mp.setenv("ELECTIVE_TEST_FOO", str)
 
-        env = EnvLoader(prefix="ELECTIVE_TEST_")
+        env = EnvConfiguration(prefix="ELECTIVE_TEST_")
         env.load()
 
         assert elective.process_string("foo", env.options) == str
@@ -90,7 +90,7 @@ def test_load_env_bad_string(monkeypatch):
     """Should handle bad string variables from the environment."""
     monkeypatch.setenv("ELECTIVE_TEST_FOO", "bar")
 
-    env = EnvLoader(prefix="ELECTIVE_TEST_")
+    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
     env.load()
 
     assert elective.process_string("bar", env.options) is None
@@ -104,7 +104,7 @@ def test_load_env_integer(val):
     with pytest.MonkeyPatch().context() as mp:
         mp.setenv("ELECTIVE_TEST_NUM", str(val))
 
-        env = EnvLoader(prefix="ELECTIVE_TEST_")
+        env = EnvConfiguration(prefix="ELECTIVE_TEST_")
         env.load()
 
         assert elective.process_integer("num", env.options) == val
@@ -114,7 +114,7 @@ def test_load_env_missing_integer(monkeypatch):
     """Should handle missing integer variables from the environment."""
     monkeypatch.setenv("ELECTIVE_TEST_NUM", "314")
 
-    env = EnvLoader(prefix="ELECTIVE_TEST_")
+    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
     env.load()
 
     assert elective.process_integer("bar", env.options) is None
@@ -124,7 +124,7 @@ def test_load_env_non_integer(monkeypatch):
     """Should handle non-integer variables from the environment."""
     monkeypatch.setenv("ELECTIVE_TEST_NUM", "3.14")
 
-    env = EnvLoader(prefix="ELECTIVE_TEST_")
+    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
     env.load()
 
     assert elective.process_integer("num", env.options) is None
@@ -138,7 +138,7 @@ def test_load_env_float(val):
     with pytest.MonkeyPatch().context() as mp:
         mp.setenv("ELECTIVE_TEST_NUM", str(val))
 
-        env = EnvLoader(prefix="ELECTIVE_TEST_")
+        env = EnvConfiguration(prefix="ELECTIVE_TEST_")
         env.load()
 
         if math.isnan(val):
@@ -151,7 +151,7 @@ def test_load_env_missing_float(monkeypatch):
     """Should handle missing float variables from the environment."""
     monkeypatch.setenv("ELECTIVE_TEST_NUM", "3.14")
 
-    env = EnvLoader(prefix="ELECTIVE_TEST_")
+    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
     env.load()
 
     assert elective.process_float("bar", env.options) is None
@@ -161,7 +161,7 @@ def test_load_env_non_float(monkeypatch):
     """Should handle non-float variables from the environment."""
     monkeypatch.setenv("ELECTIVE_TEST_NUM", "bar")
 
-    env = EnvLoader(prefix="ELECTIVE_TEST_")
+    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
     env.load()
 
     assert elective.process_float("num", env.options) is None
@@ -174,7 +174,7 @@ def test_load_env_list(monkeypatch):
     monkeypatch.setenv("ELECTIVE_TEST_LIST__2", "2")
     monkeypatch.setenv("ELECTIVE_TEST_LIST__3", "3")
 
-    env = EnvLoader(prefix="ELECTIVE_TEST_")
+    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
     env.load()
 
     assert elective.process_list("list", env.options) == ["0", "1", "2", "3"]
@@ -187,7 +187,7 @@ def test_load_env_missing_list(monkeypatch):
     monkeypatch.setenv("ELECTIVE_TEST_LIST__2", "2")
     monkeypatch.setenv("ELECTIVE_TEST_LIST__3", "3")
 
-    env = EnvLoader(prefix="ELECTIVE_TEST_")
+    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
     env.load()
 
     assert elective.process_list("bar", env.options) is None
@@ -200,7 +200,7 @@ def test_load_env_non_list(monkeypatch):
     monkeypatch.setenv("ELECTIVE_TEST_DICT__THREE", "tres")
     monkeypatch.setenv("ELECTIVE_TEST_DICT__FOUR", "cuatro")
 
-    env = EnvLoader(prefix="ELECTIVE_TEST_")
+    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
     env.load()
 
     assert elective.process_list("dict", env.options) is None
@@ -213,7 +213,7 @@ def test_load_env_dict(monkeypatch):
     monkeypatch.setenv("ELECTIVE_TEST_DICT__THREE", "tres")
     monkeypatch.setenv("ELECTIVE_TEST_DICT__FOUR", "cuatro")
 
-    env = EnvLoader(prefix="ELECTIVE_TEST_")
+    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
     env.load()
 
     actual = elective.process_dict("dict", env.options)
@@ -234,7 +234,7 @@ def test_load_env_missing_dict(monkeypatch):
     monkeypatch.setenv("ELECTIVE_TEST_DICT__THREE", "tres")
     monkeypatch.setenv("ELECTIVE_TEST_DICT__FOUR", "cuatro")
 
-    env = EnvLoader(prefix="ELECTIVE_TEST_")
+    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
     env.load()
 
     assert elective.process_dict("bar", env.options) is None
@@ -247,7 +247,7 @@ def test__load_env_non_dict(monkeypatch):
     monkeypatch.setenv("ELECTIVE_TEST_DICT__2", "2")
     monkeypatch.setenv("ELECTIVE_TEST_DICT__3", "3")
 
-    env = EnvLoader(prefix="ELECTIVE_TEST_")
+    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
     env.load()
 
     assert elective.process_dict("dict", env.options) is None

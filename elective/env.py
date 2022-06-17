@@ -13,15 +13,20 @@
 import os
 import sys
 
+from .config import Configuration
 
-class EnvLoader:
+
+class EnvConfiguration(Configuration):
     """Client program environment variable loader."""
 
     def __init__(self, *args, **kwargs):
         """Initialize the client environment variable loader."""
+        # Pop our arguments.
         self.prefix = kwargs.pop("prefix", "ELECTIVE_")
         self.separator = kwargs.pop("separator", "__")
-        self.options = {}
+
+        # Call the super.
+        super().__init__(*args, **kwargs)
 
     @staticmethod
     def _are_keys_indices(d):
@@ -85,11 +90,11 @@ class EnvLoader:
         for (k, v) in ds.items():
             if isinstance(ds[k], dict):
                 # If the item points a dict, descend.
-                ds[k] = EnvLoader._convert_listdict_to_list(ds[k])
+                ds[k] = EnvConfiguration._convert_listdict_to_list(ds[k])
                 # We're back.  Now check if the dict is a list-style dict
                 # and maybe convert to a list.
-                if EnvLoader._are_keys_indices(ds[k]):
-                    ds[k] = EnvLoader._convert_dict_to_list(ds[k])
+                if EnvConfiguration._are_keys_indices(ds[k]):
+                    ds[k] = EnvConfiguration._convert_dict_to_list(ds[k])
 
         return ds
 
@@ -135,9 +140,10 @@ class EnvLoader:
                             sub_config = sub_config[k]
                     sub_config[keys[-1]] = value
 
-        self.options = EnvLoader._convert_listdict_to_list(config)
+        self.options = EnvConfiguration._convert_listdict_to_list(config)
 
-    def dump(self, export=True, shell="sh"):
+    # def dump(self, export=True, shell="sh"):
+    def dump(self, *args, **kwargs):
         """Dump configuration as environment variable strings.
 
         Parameters
@@ -155,6 +161,10 @@ class EnvLoader:
             The current configuration as a string setting environment
             variables.
         """
+        # Pop our arguments.
+        export = kwargs.pop("export", True)
+        # sh = kwargs.pop("shell", "sh")
+
         stack = []
         dumps = []
         if export:

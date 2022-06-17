@@ -10,9 +10,10 @@
 
 """elective:  a Python configuration loader generator."""
 
-from .cli import CliLoader
-from .config import ElectiveConfig
-from .env import EnvLoader
+from .cli import CliConfiguration
+from .config import Configuration
+from .elective import ElectiveConfig
+from .env import EnvConfiguration
 from .env import process_boolean
 from .env import process_dict
 from .env import process_float
