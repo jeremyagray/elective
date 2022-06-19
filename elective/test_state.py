@@ -44,6 +44,32 @@ def test_state___init___inital_string(value, source):
 
 
 @given(
+    initial=st.lists(
+        st.tuples(
+            st.text(alphabet=st.characters()),
+            st.text(alphabet=st.characters()),
+        ),
+    ),
+)
+def test_state___init___inital_list(initial):
+    """Should initialize a ``State`` with an initial string value."""
+    state = elective.State(*initial)
+
+    if len(initial) > 0:
+        assert state._current == initial[-1][0]
+        assert state.current == initial[-1][0]
+        assert len(state.values) == len(initial)
+        assert len(state.sources) == len(initial)
+        assert state.values == [x[0] for x in initial]
+        assert state.sources == [x[1] for x in initial]
+    else:
+        assert state._current is None
+        assert state.current is None
+        assert state.values == []
+        assert state.sources == []
+
+
+@given(
     value=st.integers(min_value=50, max_value=50),
     source=st.text(alphabet=st.characters()),
 )

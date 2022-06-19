@@ -14,14 +14,24 @@
 class State:
     """A variable with history."""
 
-    def __init__(self, initial=None):
-        """Initialize a state."""
+    def __init__(self, *args):
+        """Initialize a state.
+
+        Initialize a state with the tuples supplied in ``args``.
+
+        Parameters
+        ----------
+        args : tuple
+            An iterable of tuples of value and source pairs.
+        """
         self.values = []
         self.sources = []
         self._current = None
 
-        if initial:
-            self.set(initial[0], initial[1])
+        print(f"args: {args}")
+        for pair in args:
+            print(f"pair: {pair}")
+            self.set(pair[0], pair[1])
 
     def __eq__(self, other):
         """Determine if two states are equal."""
@@ -33,13 +43,6 @@ class State:
                 len(other.sources) > 0,
             )
         ):
-            print("good length")
-            print(f"self v:{self.values[-1]} s:{self.sources[-1]}")
-            print(f"other v:{other.values[-1]} s:{other.sources[-1]}")
-            print(
-                self.values[-1] == other.values[-1]
-                and self.sources[-1] == other.sources[-1]
-            )
             return (
                 self.values[-1] == other.values[-1]
                 and self.sources[-1] == other.sources[-1]
