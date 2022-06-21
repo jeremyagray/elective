@@ -70,6 +70,44 @@ def test_state___init___inital_list(initial):
 
 
 @given(
+    initial=st.lists(
+        st.tuples(
+            st.text(alphabet=st.characters()),
+            st.text(alphabet=st.characters()),
+        ),
+    ),
+)
+def test_state___str__(initial):
+    """Should stringify a ``State``."""
+    state = elective.State(*initial)
+
+    if len(initial) > 0:
+        assert str(state) == (
+            f"current value: {initial[-1][0]} source: {initial[-1][1]}"
+        )
+    else:
+        assert str(state) == "current value: None source: None"
+
+
+@given(
+    initial=st.lists(
+        st.tuples(
+            st.text(alphabet=st.characters()),
+            st.text(alphabet=st.characters()),
+        ),
+    ),
+)
+def test_state___repr__(initial):
+    """Should reproduce a ``State``."""
+    state = elective.State(*initial)
+
+    if len(initial) > 0:
+        assert repr(state) == (f"State(({initial[-1][0]}, {initial[-1][1]}))")
+    else:
+        assert repr(state) == "State((, ))"
+
+
+@given(
     value=st.integers(min_value=50, max_value=50),
     source=st.text(alphabet=st.characters()),
 )

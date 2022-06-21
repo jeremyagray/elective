@@ -28,10 +28,22 @@ class State:
         self.sources = []
         self._current = None
 
-        print(f"args: {args}")
         for pair in args:
-            print(f"pair: {pair}")
             self.set(pair[0], pair[1])
+
+    def __str__(self):
+        """Stringify a state."""
+        if self.values:
+            return f"current value: {self.values[-1]} source: {self.sources[-1]}"
+        else:
+            return "current value: None source: None"
+
+    def __repr__(self):
+        """Reproduce a state."""
+        if self.values:
+            return f"State(({self.values[-1]}, {self.sources[-1]}))"
+        else:
+            return "State((, ))"
 
     def __eq__(self, other):
         """Determine if two states are equal."""
