@@ -1057,3 +1057,97 @@ def test_merge_type_errors():
         }
 
         elective.ElectiveConfig._merge2(left, right)
+
+
+def test__make_stateful_none():
+    """Should make ``None`` stateful."""
+    expected = elective.State((None, "default"))
+    assert elective.ElectiveConfig._make_stateful(None, "default") == expected
+
+
+@given(
+    var=st.integers(),
+)
+def test__make_stateful_int(var):
+    """Should make integers stateful."""
+    expected = elective.State((var, "default"))
+    assert elective.ElectiveConfig._make_stateful(var, "default") == expected
+
+
+@given(
+    var=st.booleans(),
+)
+def test__make_stateful_bool(var):
+    """Should make integers stateful."""
+    expected = elective.State((var, "default"))
+    assert elective.ElectiveConfig._make_stateful(var, "default") == expected
+
+
+@given(
+    var=st.floats(),
+)
+def test__make_stateful_float(var):
+    """Should make integers stateful."""
+    expected = elective.State((var, "default"))
+    assert elective.ElectiveConfig._make_stateful(var, "default") == expected
+
+
+@given(
+    scalar=st.one_of(
+        st.integers(),
+        st.floats(),
+        st.booleans(),
+        st.text(alphabet=st.characters()),
+    ),
+    array=st.lists(
+        st.one_of(
+            st.integers(),
+            st.floats(),
+            st.booleans(),
+            st.text(alphabet=st.characters()),
+        ),
+    ),
+)
+def test__make_stateful_dict(scalar, array):
+    """Should make dicts stateful."""
+    obj = {
+        "one": scalar,
+        "two": array,
+        "sub": {
+            "one": scalar,
+            "two": array,
+            "three": {
+                "one": scalar,
+                "two": scalar,
+                "three": scalar,
+            },
+        },
+    }
+
+    expected = {
+        "one": elective.State((scalar, "default")),
+        "two": [],
+        "sub": {
+            "one": elective.State((scalar, "default")),
+            "two": [],
+            "three": {
+                "one": elective.State((scalar, "default")),
+                "two": elective.State((scalar, "default")),
+                "three": elective.State((scalar, "default")),
+            },
+        },
+    }
+    for item in array:
+        expected["two"].append(elective.State((item, "default")))
+        expected["sub"]["two"].append(elective.State((item, "default")))
+
+    assert elective.ElectiveConfig._make_stateful(obj, "default") == expected
+
+
+def test__make_stateful_not_implemented():
+    """Should raise NotImplementedError."""
+    with pytest.raises(NotImplementedError):
+        elective.ElectiveConfig._make_stateful(
+            elective.State((1, "default")),
+            "default",
+        )

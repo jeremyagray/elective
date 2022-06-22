@@ -52,6 +52,47 @@ class ElectiveConfig:
         pass
 
     @staticmethod
+    def _make_stateful(d, source):
+        """Convert ``d`` from a dict to a stateful dict."""
+        # Scalar types; return State.
+        if any(
+            (
+                isinstance(d, str),
+                isinstance(d, bool),
+                isinstance(d, int),
+                isinstance(d, float),
+                d is None,
+            )
+        ):
+            return State((d, source))
+
+        # Lists; recurse on items.
+        if any(
+            (
+                isinstance(d, list),
+                isinstance(d, tuple),
+            )
+        ):
+            res = []
+
+            for item in d:
+                res.append(ElectiveConfig._make_stateful(item, source))
+
+            return res
+
+        # Dicts; recurse on common key/value pairs.
+        if isinstance(d, dict):
+            res = {}
+            for (k, v) in d.items():
+                res[k] = ElectiveConfig._make_stateful(v, source)
+
+            return res
+
+        raise NotImplementedError(
+            "stateful handling of type {type(d)} is not implemented"
+        )
+
+    @staticmethod
     def _process_option(option):
         """Process an option."""
         cleaned = None
