@@ -637,3 +637,45 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     assert conf.options["show-license"] == options["show-license"]
     assert "show-warranty" in conf.options
     assert conf.options["show-warranty"] == options["show-warranty"]
+
+
+def test_merge_scalar_into_None():
+    """Should merge a scalar into ``None``."""
+    left = {}
+    right = {"option": elective.State(("one", "default"))}
+    expected = right
+
+    assert elective.ElectiveConfig._merge2(left, right) == expected
+    assert elective.ElectiveConfig._merge2(right, left) == expected
+
+
+def test_merge_different_scalars():
+    """Should different scalars."""
+    left = {"one": elective.State((1, "left"))}
+    right = {"two": elective.State((2, "right"))}
+    expected = {
+        "one": elective.State((1, "left")),
+        "two": elective.State((2, "right")),
+    }
+
+    assert elective.ElectiveConfig._merge2(left, right) == expected
+    assert elective.ElectiveConfig._merge2(right, left) == expected
+
+
+def test_merge_same_scalars():
+    """Should merge the same scalars."""
+    left = {"one": elective.State((1, "left"))}
+    right = {"one": elective.State((2, "right"))}
+    expected = {
+        "one": elective.State((1, "left"), (2, "right")),
+    }
+
+    actual = elective.ElectiveConfig._merge2(left, right)
+    assert actual == expected
+
+    expected = {
+        "one": elective.State((2, "right"), (1, "left")),
+    }
+
+    actual = elective.ElectiveConfig._merge2(right, left)
+    assert actual == expected

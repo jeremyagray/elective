@@ -10,12 +10,15 @@
 
 """elective configuration functions."""
 
+import copy
+
 from .cli import CliConfiguration
 from .exceptions import ElectiveFileLoadingError
 from .files import load_bespon_file
 from .files import load_json_file
 from .files import load_toml_file
 from .files import load_yaml_file
+from .state import State
 
 
 class ElectiveConfig:
@@ -161,6 +164,63 @@ class ElectiveConfig:
                 left[k] = v
 
         return left
+
+    @staticmethod
+    def _merge2(left, right):
+        """Merge ``right`` into ``left``.
+
+        Merge ``right`` dictionary into ``left`` dictionary and return ``left``.
+
+        Returns
+        -------
+        left : dict
+            Dictionary resulting from merging ``right`` and ``left``.
+
+        Raises
+        ------
+        ValueError
+            Raises when ``left`` has a previously stored value that
+            does not match the similar value in ``right`` or when a
+            ``right`` value is not a dict, list, or ``State``.
+        """
+        if not left:
+            return copy.deepcopy(right)
+
+        res = copy.deepcopy(left)
+
+        for (k, v) in right.items():
+            if k not in res:
+                res[k] = v
+                continue
+
+            if not any(
+                (isinstance(v, dict), isinstance(v, list), isinstance(v, State))
+            ):
+                raise ValueError(
+                    f"right value at key {k} is not a dict, list, or State."
+                )
+
+            if isinstance(v, dict):
+                if isinstance(res[k], dict) or res[k] is None:
+                    res[k] = ElectiveConfig._merge2(res[k], v)
+                else:
+                    raise ValueError(
+                        f"merge type mismatch; left {type(res[k])}, right {type(v)}"
+                    )
+            elif isinstance(v, list):
+                if isinstance(res[k], list) or res[k] is None:
+                    for item in v:
+                        res[k] = ElectiveConfig._merge2(res[k], v)
+                else:
+                    raise ValueError(
+                        f"merge type mismatch; left {type(res[k])}, right {type(v)}"
+                    )
+            elif isinstance(res[k], State):
+                res[k].set(v.values[-1], v.sources[-1])
+            else:
+                res[k] = State((v.values[-1], v.sources[-1]))
+
+        return res
 
     def _left_merge(self, config):
         """Left merge ``self`` and ``config`` configuration options."""
