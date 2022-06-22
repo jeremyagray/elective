@@ -650,7 +650,7 @@ def test_merge_scalar_into_None():
 
 
 def test_merge_different_scalars():
-    """Should different scalars."""
+    """Should merge different scalars."""
     left = {"one": elective.State((1, "left"))}
     right = {"two": elective.State((2, "right"))}
     expected = {
@@ -679,3 +679,381 @@ def test_merge_same_scalars():
 
     actual = elective.ElectiveConfig._merge2(right, left)
     assert actual == expected
+
+
+def test_merge_list_into_None():
+    """Should merge a list into ``None``."""
+    left = {}
+    right = {
+        "option": [
+            elective.State(("one", "default")),
+            elective.State(("two", "default")),
+            elective.State(("three", "default")),
+        ],
+    }
+    expected = right
+
+    assert elective.ElectiveConfig._merge2(left, right) == expected
+    assert elective.ElectiveConfig._merge2(right, left) == expected
+
+
+def test_merge_different_lists():
+    """Should merge different lists into separate lists."""
+    left = {
+        "one": [
+            elective.State((1, "left")),
+            elective.State((2, "left")),
+            elective.State((3, "left")),
+        ],
+    }
+    right = {
+        "two": [
+            elective.State(("one", "right")),
+            elective.State(("two", "right")),
+            elective.State(("three", "right")),
+        ],
+    }
+    expected = {
+        "one": [
+            elective.State((1, "left")),
+            elective.State((2, "left")),
+            elective.State((3, "left")),
+        ],
+        "two": [
+            elective.State(("one", "right")),
+            elective.State(("two", "right")),
+            elective.State(("three", "right")),
+        ],
+    }
+
+    assert elective.ElectiveConfig._merge2(left, right) == expected
+    assert elective.ElectiveConfig._merge2(right, left) == expected
+
+
+def test_merge_same_lists():
+    """Should merge the lists into one list."""
+    left = {
+        "one": [
+            elective.State((1, "left")),
+            elective.State((2, "left")),
+            elective.State((3, "left")),
+        ],
+    }
+    right = {
+        "one": [
+            elective.State(("one", "right")),
+            elective.State(("two", "right")),
+            elective.State(("three", "right")),
+        ],
+    }
+
+    expected = {
+        "one": [
+            elective.State((1, "left")),
+            elective.State((2, "left")),
+            elective.State((3, "left")),
+            elective.State(("one", "right")),
+            elective.State(("two", "right")),
+            elective.State(("three", "right")),
+        ],
+    }
+
+    assert elective.ElectiveConfig._merge2(left, right) == expected
+
+    expected = {
+        "one": [
+            elective.State(("one", "right")),
+            elective.State(("two", "right")),
+            elective.State(("three", "right")),
+            elective.State((1, "left")),
+            elective.State((2, "left")),
+            elective.State((3, "left")),
+        ],
+    }
+
+    assert elective.ElectiveConfig._merge2(right, left) == expected
+
+
+def test_merge_same_dicts_same_keys():
+    """Should merge the dicts into one dict."""
+    left = {
+        "one": {
+            "one": elective.State((1, "left")),
+            "two": elective.State((2, "left")),
+            "three": elective.State((3, "left")),
+        },
+    }
+    right = {
+        "one": {
+            "one": elective.State(("one", "right")),
+            "two": elective.State(("two", "right")),
+            "three": elective.State(("three", "right")),
+        },
+    }
+
+    expected = {
+        "one": {
+            "one": elective.State(("one", "right")),
+            "two": elective.State(("two", "right")),
+            "three": elective.State(("three", "right")),
+        },
+    }
+
+    assert elective.ElectiveConfig._merge2(left, right) == expected
+
+    expected = {
+        "one": {
+            "one": elective.State((1, "left")),
+            "two": elective.State((2, "left")),
+            "three": elective.State((3, "left")),
+        },
+    }
+
+    assert elective.ElectiveConfig._merge2(right, left) == expected
+
+
+def test_merge_same_dicts_different_keys():
+    """Should merge the dicts into one dict."""
+    left = {
+        "one": {
+            "one": elective.State((1, "left")),
+            "two": elective.State((2, "left")),
+            "three": elective.State((3, "left")),
+        },
+    }
+    right = {
+        "one": {
+            "four": elective.State(("four", "right")),
+            "five": elective.State(("five", "right")),
+            "six": elective.State(("six", "right")),
+        },
+    }
+
+    expected = {
+        "one": {
+            "one": elective.State((1, "left")),
+            "two": elective.State((2, "left")),
+            "three": elective.State((3, "left")),
+            "four": elective.State(("four", "right")),
+            "five": elective.State(("five", "right")),
+            "six": elective.State(("six", "right")),
+        },
+    }
+
+    assert elective.ElectiveConfig._merge2(left, right) == expected
+    assert elective.ElectiveConfig._merge2(right, left) == expected
+
+
+def test_merge_different_dicts():
+    """Should merge the dicts into separate dicts."""
+    left = {
+        "one": {
+            "one": elective.State((1, "left")),
+            "two": elective.State((2, "left")),
+            "three": elective.State((3, "left")),
+        },
+    }
+    right = {
+        "two": {
+            "four": elective.State(("four", "right")),
+            "five": elective.State(("five", "right")),
+            "six": elective.State(("six", "right")),
+        },
+    }
+
+    expected = {
+        "one": {
+            "one": elective.State((1, "left")),
+            "two": elective.State((2, "left")),
+            "three": elective.State((3, "left")),
+        },
+        "two": {
+            "four": elective.State(("four", "right")),
+            "five": elective.State(("five", "right")),
+            "six": elective.State(("six", "right")),
+        },
+    }
+
+    assert elective.ElectiveConfig._merge2(left, right) == expected
+    assert elective.ElectiveConfig._merge2(right, left) == expected
+
+
+def test_merge_lists_with_dicts():
+    """Should merge the lists into one list."""
+    left = {
+        "one": [
+            {
+                "one": elective.State((1, "left")),
+                "two": elective.State((2, "left")),
+                "three": elective.State((3, "left")),
+            },
+            elective.State((1, "left")),
+            elective.State((2, "left")),
+            elective.State((3, "left")),
+        ],
+    }
+    right = {
+        "one": [
+            {
+                "one": elective.State(("one", "right")),
+                "two": elective.State(("two", "right")),
+                "three": elective.State(("three", "right")),
+            },
+            elective.State(("one", "right")),
+            elective.State(("two", "right")),
+            elective.State(("three", "right")),
+        ],
+    }
+
+    expected = {
+        "one": [
+            {
+                "one": elective.State((1, "left")),
+                "two": elective.State((2, "left")),
+                "three": elective.State((3, "left")),
+            },
+            elective.State((1, "left")),
+            elective.State((2, "left")),
+            elective.State((3, "left")),
+            {
+                "one": elective.State(("one", "right")),
+                "two": elective.State(("two", "right")),
+                "three": elective.State(("three", "right")),
+            },
+            elective.State(("one", "right")),
+            elective.State(("two", "right")),
+            elective.State(("three", "right")),
+        ],
+    }
+
+    assert elective.ElectiveConfig._merge2(left, right) == expected
+
+    expected = {
+        "one": [
+            {
+                "one": elective.State(("one", "right")),
+                "two": elective.State(("two", "right")),
+                "three": elective.State(("three", "right")),
+            },
+            elective.State(("one", "right")),
+            elective.State(("two", "right")),
+            elective.State(("three", "right")),
+            {
+                "one": elective.State((1, "left")),
+                "two": elective.State((2, "left")),
+                "three": elective.State((3, "left")),
+            },
+            elective.State((1, "left")),
+            elective.State((2, "left")),
+            elective.State((3, "left")),
+        ],
+    }
+
+    assert elective.ElectiveConfig._merge2(right, left) == expected
+
+
+def test_merge_lists_with_lists():
+    """Should merge the lists into one list."""
+    left = {
+        "one": [
+            elective.State((1, "left")),
+            elective.State((2, "left")),
+            elective.State((3, "left")),
+            [
+                elective.State((1, "left")),
+                elective.State((2, "left")),
+                elective.State((3, "left")),
+            ],
+        ],
+    }
+    right = {
+        "one": [
+            elective.State(("one", "right")),
+            elective.State(("two", "right")),
+            elective.State(("three", "right")),
+            [
+                elective.State(("one", "right")),
+                elective.State(("two", "right")),
+                elective.State(("three", "right")),
+            ],
+        ],
+    }
+
+    expected = {
+        "one": [
+            elective.State((1, "left")),
+            elective.State((2, "left")),
+            elective.State((3, "left")),
+            [
+                elective.State((1, "left")),
+                elective.State((2, "left")),
+                elective.State((3, "left")),
+            ],
+            elective.State(("one", "right")),
+            elective.State(("two", "right")),
+            elective.State(("three", "right")),
+            [
+                elective.State(("one", "right")),
+                elective.State(("two", "right")),
+                elective.State(("three", "right")),
+            ],
+        ],
+    }
+
+    assert elective.ElectiveConfig._merge2(left, right) == expected
+
+    expected = {
+        "one": [
+            elective.State(("one", "right")),
+            elective.State(("two", "right")),
+            elective.State(("three", "right")),
+            [
+                elective.State(("one", "right")),
+                elective.State(("two", "right")),
+                elective.State(("three", "right")),
+            ],
+            elective.State((1, "left")),
+            elective.State((2, "left")),
+            elective.State((3, "left")),
+            [
+                elective.State((1, "left")),
+                elective.State((2, "left")),
+                elective.State((3, "left")),
+            ],
+        ],
+    }
+
+    assert elective.ElectiveConfig._merge2(right, left) == expected
+
+
+def test_merge_type_errors():
+    """Should raise mis-matched type errors."""
+    with pytest.raises(TypeError):
+        left = 1
+        right = elective.State((1, "right"))
+
+        elective.ElectiveConfig._merge2(left, right)
+
+    with pytest.raises(TypeError):
+        left = {
+            "one": 1,
+        }
+        right = {
+            "one": [
+                elective.State((1, "right")),
+            ],
+        }
+
+        elective.ElectiveConfig._merge2(left, right)
+
+    with pytest.raises(TypeError):
+        left = {
+            "one": 1,
+        }
+        right = {
+            "one": {
+                "one": elective.State((1, "right")),
+            },
+        }
+
+        elective.ElectiveConfig._merge2(left, right)

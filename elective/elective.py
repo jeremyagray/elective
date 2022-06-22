@@ -166,10 +166,19 @@ class ElectiveConfig:
         return left
 
     @staticmethod
-    def _merge2(left, right):
+    def _merge2(left, right, _debug=False):
         """Merge ``right`` into ``left``.
 
         Merge ``right`` dictionary into ``left`` dictionary and return ``left``.
+
+        Parameters
+        ----------
+        left : dict
+            Left dict.
+        right : dict
+            Right dict.
+        _debug : bool, default=False
+            Print debugging output, or not.
 
         Returns
         -------
@@ -183,44 +192,67 @@ class ElectiveConfig:
             does not match the similar value in ``right`` or when a
             ``right`` value is not a dict, list, or ``State``.
         """
+        # No left; return right.
         if not left:
             return copy.deepcopy(right)
 
         res = copy.deepcopy(left)
 
-        for (k, v) in right.items():
-            if k not in res:
-                res[k] = v
-                continue
+        # Scalars; combine right into left.
+        if isinstance(right, State):
+            print("merging scalars") if _debug else None
 
-            if not any(
-                (isinstance(v, dict), isinstance(v, list), isinstance(v, State))
-            ):
-                raise ValueError(
-                    f"right value at key {k} is not a dict, list, or State."
+            if not isinstance(left, State):
+                raise TypeError(
+                    f"merge type mismatch; right is a State and left is a {type(res)}"
                 )
 
-            if isinstance(v, dict):
-                if isinstance(res[k], dict) or res[k] is None:
-                    res[k] = ElectiveConfig._merge2(res[k], v)
-                else:
-                    raise ValueError(
-                        f"merge type mismatch; left {type(res[k])}, right {type(v)}"
-                    )
-            elif isinstance(v, list):
-                if isinstance(res[k], list) or res[k] is None:
-                    for item in v:
-                        res[k] = ElectiveConfig._merge2(res[k], v)
-                else:
-                    raise ValueError(
-                        f"merge type mismatch; left {type(res[k])}, right {type(v)}"
-                    )
-            elif isinstance(res[k], State):
-                res[k].set(v.values[-1], v.sources[-1])
-            else:
-                res[k] = State((v.values[-1], v.sources[-1]))
+            res.append(right)
+            return res
 
-        return res
+        # List types; recurse on common items.
+        if any(
+            (
+                isinstance(right, list),
+                isinstance(right, tuple),
+            )
+        ):
+            print("merging lists") if _debug else None
+
+            if not isinstance(left, list):
+                raise TypeError(
+                    "merge type mismatch;"
+                    " right is a list or tuple"
+                    f" and left is a {type(left)}, but should be a list"
+                )
+
+            for item in right:
+                res.append(copy.deepcopy(item))
+
+            return res
+
+        # Dicts; recurse on common key/value pairs.
+        if isinstance(right, dict):
+            print("merging dicts") if _debug else None
+
+            if not isinstance(left, dict):
+                raise TypeError(
+                    "merge type mismatch;"
+                    " right is a dict"
+                    "and left is a {type(left)}, but should be a dict"
+                )
+
+            for (k, v) in right.items():
+                if k in left:
+                    # Exists in left; merge.
+                    print("merging dict entries") if _debug else None
+                    res[k] = ElectiveConfig._merge2(left[k], v)
+                else:
+                    # Not in left; append.
+                    print("appending dict entries") if _debug else None
+                    res[k] = copy.deepcopy(v)
+
+            return res
 
     def _left_merge(self, config):
         """Left merge ``self`` and ``config`` configuration options."""
