@@ -10,6 +10,8 @@
 
 """Scalar variable value and history support."""
 
+import math
+
 
 class State:
     """A variable with history."""
@@ -55,10 +57,29 @@ class State:
                 len(other.sources) > 0,
             )
         ):
-            return (
-                self.values[-1] == other.values[-1]
-                and self.sources[-1] == other.sources[-1]
-            )
+            if all(
+                (
+                    isinstance(self.values[-1], float),
+                    isinstance(other.values[-1], float),
+                )
+            ):
+                if all(
+                    (
+                        math.isnan(self.values[-1]),
+                        math.isnan(other.values[-1]),
+                    )
+                ):
+                    return self.sources[-1] == other.sources[-1]
+                else:
+                    return (
+                        self.values[-1] == other.values[-1]
+                        and self.sources[-1] == other.sources[-1]
+                    )
+            else:
+                return (
+                    self.values[-1] == other.values[-1]
+                    and self.sources[-1] == other.sources[-1]
+                )
 
         return False
 

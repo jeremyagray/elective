@@ -108,7 +108,7 @@ def test_state___repr__(initial):
 
 
 @given(
-    value=st.integers(min_value=50, max_value=50),
+    value=st.integers(),
     source=st.text(alphabet=st.characters()),
 )
 def test_state___init___inital_int(value, source):
@@ -156,9 +156,19 @@ def test_state___init___inital_bool(value, source):
 
 
 @given(
-    v1=st.text(alphabet=st.characters()),
+    v1=st.one_of(
+        st.integers(),
+        st.floats(),
+        st.booleans(),
+        st.text(alphabet=st.characters()),
+    ),
     s1=st.text(alphabet=st.characters()),
-    v2=st.text(alphabet=st.characters()),
+    v2=st.one_of(
+        st.integers(),
+        st.floats(),
+        st.booleans(),
+        st.text(alphabet=st.characters()),
+    ),
     s2=st.text(alphabet=st.characters()),
 )
 def test_state___eq___equal(v1, s1, v2, s2):
