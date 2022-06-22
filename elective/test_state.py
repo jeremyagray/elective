@@ -164,11 +164,11 @@ def test_state___init___inital_bool(value, source):
 def test_state___eq___equal(v1, s1, v2, s2):
     """Should be equal."""
     left = elective.State()
-    left.set(v1, s1)
-    left.set(v2, s2)
+    left.update(v1, s1)
+    left.update(v2, s2)
     right = elective.State()
-    right.set(v1, s1)
-    right.set(v2, s2)
+    right.update(v1, s1)
+    right.update(v2, s2)
 
     assert left == right
     assert right == left
@@ -185,11 +185,11 @@ def test_state___eq___equal(v1, s1, v2, s2):
 def test_state___eq___unequal_values(args):
     """Should be unequal."""
     left = elective.State()
-    left.set(args[0], args[1])
-    left.set(args[0], args[1])
+    left.update(args[0], args[1])
+    left.update(args[0], args[1])
     right = elective.State()
-    right.set(args[2], args[3])
-    right.set(args[2], args[3])
+    right.update(args[2], args[3])
+    right.update(args[2], args[3])
 
     assert left != right
     assert right != left
@@ -206,10 +206,10 @@ def test_state___eq___unequal_values(args):
 def test_state___eq___unequal_lengths(args):
     """Should be unequal."""
     left = elective.State()
-    left.set(args[0], args[1])
-    left.set(args[0], args[1])
+    left.update(args[0], args[1])
+    left.update(args[0], args[1])
     right = elective.State()
-    right.set(args[2], args[3])
+    right.update(args[2], args[3])
 
     assert left != right
     assert right != left
@@ -226,9 +226,54 @@ def test_state___eq___unequal_lengths(args):
 def test_state___eq___unequal_empty(args):
     """Should be unequal."""
     left = elective.State()
-    left.set(args[0], args[1])
-    left.set(args[0], args[1])
+    left.update(args[0], args[1])
+    left.update(args[0], args[1])
     right = elective.State()
 
     assert left != right
     assert right != left
+
+
+@given(
+    one=st.lists(
+        st.tuples(
+            st.text(alphabet=st.characters()),
+            st.text(alphabet=st.characters()),
+        ),
+    ),
+    two=st.lists(
+        st.tuples(
+            st.text(alphabet=st.characters()),
+            st.text(alphabet=st.characters()),
+        ),
+    ),
+)
+def test_state_append(one, two):
+    """Should append a ``State``."""
+    initial = elective.State(*one)
+    update = elective.State(*two)
+
+    initial.append(update)
+    assert list(zip(initial.values, initial.sources)) == one + two
+
+
+@given(
+    one=st.lists(
+        st.tuples(
+            st.text(alphabet=st.characters()),
+            st.text(alphabet=st.characters()),
+        ),
+    ),
+    two=st.one_of(
+        st.integers(),
+        st.floats(),
+        st.text(),
+    ),
+)
+def test_state_append_bad_other(one, two):
+    """Should raise a TypeError."""
+    initial = elective.State(*one)
+    update = two
+
+    with pytest.raises(TypeError):
+        initial.append(update)

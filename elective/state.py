@@ -29,7 +29,7 @@ class State:
         self._current = None
 
         for pair in args:
-            self.set(pair[0], pair[1])
+            self.update(pair[0], pair[1])
 
     def __str__(self):
         """Stringify a state."""
@@ -67,8 +67,16 @@ class State:
         """Get the current value of the state."""
         return self._current
 
-    def set(self, value, source):
-        """Set the current state."""
+    def update(self, value, source):
+        """Update the current state."""
         self.values.append(value)
         self.sources.append(source)
         self._current = value
+
+    def append(self, other):
+        """Append other's history onto self's history."""
+        if not isinstance(other, State):
+            raise TypeError("other must be a State")
+
+        for (v, s) in zip(other.values, other.sources):
+            self.update(v, s)
