@@ -2,7 +2,7 @@
 #
 # elective:  a Python configuration loader generator
 #
-# Copyright 2021 Jeremy A Gray <gray@flyquackswim.com>.
+# Copyright 2021-2022 Jeremy A Gray <gray@flyquackswim.com>.
 #
 # SPDX-License-Identifier: MIT
 #
@@ -192,7 +192,7 @@ class ElectiveConfig:
         elif self.elective["combine"] == "right":
             self._right_merge(config)
         elif self.elective["combine"] is None:
-            self._set_options(config)
+            self.options = config
 
     @staticmethod
     def _merge1(left, right):
@@ -305,19 +305,6 @@ class ElectiveConfig:
         """Right merge ``self`` and ``config`` configuration options."""
         self.options = ElectiveConfig._merge(config, self.options)
 
-    @staticmethod
-    def _mask_options(defaults, options):
-        """Mask ``options`` with the defaults."""
-        new = {}
-        for (k, v) in defaults.items():
-            new[k] = options.get(k, defaults[k])
-
-        return new
-
-    def _set_options(self, options):
-        """Set ``options`` as the configuration options."""
-        self.options = ElectiveConfig._mask_options(options)
-
     def _load_cli_options(self):
         """Load CLI options."""
         cli = CliConfiguration()
@@ -328,9 +315,7 @@ class ElectiveConfig:
     def _load_toml_options(self):
         """Load TOML options."""
         try:
-            opts = ElectiveConfig._mask_options(
-                load_toml_file("./.{self.elective['name']}.{file}")
-            )
+            opts = load_toml_file("./.{self.elective['name']}.{file}")
         except:  # noqa: E722
             opts = {}
 
@@ -339,9 +324,7 @@ class ElectiveConfig:
     def _load_json_options(self):
         """Load JSON options."""
         try:
-            opts = ElectiveConfig._mask_options(
-                load_json_file("./.{self.elective['name']}.{file}")
-            )
+            opts = load_json_file("./.{self.elective['name']}.{file}")
         except:  # noqa: E722
             opts = {}
 
@@ -350,9 +333,7 @@ class ElectiveConfig:
     def _load_yaml_options(self):
         """Load YAML options."""
         try:
-            opts = ElectiveConfig._mask_options(
-                load_yaml_file("./.{self.elective['name']}.{file}")
-            )
+            opts = load_yaml_file("./.{self.elective['name']}.{file}")
         except:  # noqa: E722
             opts = {}
 
@@ -361,9 +342,7 @@ class ElectiveConfig:
     def _load_bespon_options(self):
         """Load BespON options."""
         try:
-            opts = ElectiveConfig._mask_options(
-                load_bespon_file("./.{self.elective['name']}.{file}")
-            )
+            opts = load_bespon_file("./.{self.elective['name']}.{file}")
         except:  # noqa: E722
             opts = {}
 
@@ -372,9 +351,7 @@ class ElectiveConfig:
     def _load_file_options(self, file):
         """Load file options."""
         try:
-            opts = ElectiveConfig._mask_options(
-                load_bespon_file("./.{self.elective['name']}.{file}")
-            )
+            opts = load_bespon_file("./.{self.elective['name']}.{file}")
         except (ElectiveFileLoadingError) as error:
             print(error)
             opts = {}
