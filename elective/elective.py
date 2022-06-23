@@ -128,6 +128,8 @@ class ElectiveConfig:
         for (k, v) in options.items():
             self.defaults[k] = v["default"]
 
+        self.defaults = ElectiveConfig._make_stateful(self.defaults, "default")
+
     def load_elective_config(self, fn):
         """Load configuration data."""
         options = load_toml_file(fn, section="elective")
@@ -193,12 +195,12 @@ class ElectiveConfig:
             self._set_options(config)
 
     @staticmethod
-    def _merge(left, right):
+    def _merge1(left, right):
         """Merge ``right`` into ``left``."""
         for (k, v) in right.items():
             if isinstance(v, dict):
                 if left[k]:
-                    left[k] = ElectiveConfig._merge(left[k], v)
+                    left[k] = ElectiveConfig._merge1(left[k], v)
                 else:
                     left[k] = v
             else:
@@ -207,7 +209,7 @@ class ElectiveConfig:
         return left
 
     @staticmethod
-    def _merge2(left, right, _debug=False):
+    def _merge(left, right, _debug=False):
         """Merge ``right`` into ``left``.
 
         Merge ``right`` dictionary into ``left`` dictionary and return ``left``.
@@ -287,7 +289,7 @@ class ElectiveConfig:
                 if k in left:
                     # Exists in left; merge.
                     print("merging dict entries") if _debug else None
-                    res[k] = ElectiveConfig._merge2(left[k], v)
+                    res[k] = ElectiveConfig._merge(left[k], v)
                 else:
                     # Not in left; append.
                     print("appending dict entries") if _debug else None

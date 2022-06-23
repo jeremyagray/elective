@@ -639,17 +639,17 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     assert conf.options["show-warranty"] == options["show-warranty"]
 
 
-def test_merge_scalar_into_None():
+def test__merge_scalar_into_none():
     """Should merge a scalar into ``None``."""
     left = {}
     right = {"option": elective.State(("one", "default"))}
     expected = right
 
-    assert elective.ElectiveConfig._merge2(left, right) == expected
-    assert elective.ElectiveConfig._merge2(right, left) == expected
+    assert elective.ElectiveConfig._merge(left, right) == expected
+    assert elective.ElectiveConfig._merge(right, left) == expected
 
 
-def test_merge_different_scalars():
+def test__merge_different_scalars():
     """Should merge different scalars."""
     left = {"one": elective.State((1, "left"))}
     right = {"two": elective.State((2, "right"))}
@@ -658,11 +658,11 @@ def test_merge_different_scalars():
         "two": elective.State((2, "right")),
     }
 
-    assert elective.ElectiveConfig._merge2(left, right) == expected
-    assert elective.ElectiveConfig._merge2(right, left) == expected
+    assert elective.ElectiveConfig._merge(left, right) == expected
+    assert elective.ElectiveConfig._merge(right, left) == expected
 
 
-def test_merge_same_scalars():
+def test__merge_same_scalars():
     """Should merge the same scalars."""
     left = {"one": elective.State((1, "left"))}
     right = {"one": elective.State((2, "right"))}
@@ -670,18 +670,18 @@ def test_merge_same_scalars():
         "one": elective.State((1, "left"), (2, "right")),
     }
 
-    actual = elective.ElectiveConfig._merge2(left, right)
+    actual = elective.ElectiveConfig._merge(left, right)
     assert actual == expected
 
     expected = {
         "one": elective.State((2, "right"), (1, "left")),
     }
 
-    actual = elective.ElectiveConfig._merge2(right, left)
+    actual = elective.ElectiveConfig._merge(right, left)
     assert actual == expected
 
 
-def test_merge_list_into_None():
+def test__merge_list_into_None():
     """Should merge a list into ``None``."""
     left = {}
     right = {
@@ -693,11 +693,11 @@ def test_merge_list_into_None():
     }
     expected = right
 
-    assert elective.ElectiveConfig._merge2(left, right) == expected
-    assert elective.ElectiveConfig._merge2(right, left) == expected
+    assert elective.ElectiveConfig._merge(left, right) == expected
+    assert elective.ElectiveConfig._merge(right, left) == expected
 
 
-def test_merge_different_lists():
+def test__merge_different_lists():
     """Should merge different lists into separate lists."""
     left = {
         "one": [
@@ -726,11 +726,11 @@ def test_merge_different_lists():
         ],
     }
 
-    assert elective.ElectiveConfig._merge2(left, right) == expected
-    assert elective.ElectiveConfig._merge2(right, left) == expected
+    assert elective.ElectiveConfig._merge(left, right) == expected
+    assert elective.ElectiveConfig._merge(right, left) == expected
 
 
-def test_merge_same_lists():
+def test__merge_same_lists():
     """Should merge the lists into one list."""
     left = {
         "one": [
@@ -758,7 +758,7 @@ def test_merge_same_lists():
         ],
     }
 
-    assert elective.ElectiveConfig._merge2(left, right) == expected
+    assert elective.ElectiveConfig._merge(left, right) == expected
 
     expected = {
         "one": [
@@ -771,10 +771,10 @@ def test_merge_same_lists():
         ],
     }
 
-    assert elective.ElectiveConfig._merge2(right, left) == expected
+    assert elective.ElectiveConfig._merge(right, left) == expected
 
 
-def test_merge_same_dicts_same_keys():
+def test__merge_same_dicts_same_keys():
     """Should merge the dicts into one dict."""
     left = {
         "one": {
@@ -799,7 +799,7 @@ def test_merge_same_dicts_same_keys():
         },
     }
 
-    assert elective.ElectiveConfig._merge2(left, right) == expected
+    assert elective.ElectiveConfig._merge(left, right) == expected
 
     expected = {
         "one": {
@@ -809,10 +809,10 @@ def test_merge_same_dicts_same_keys():
         },
     }
 
-    assert elective.ElectiveConfig._merge2(right, left) == expected
+    assert elective.ElectiveConfig._merge(right, left) == expected
 
 
-def test_merge_same_dicts_different_keys():
+def test__merge_same_dicts_different_keys():
     """Should merge the dicts into one dict."""
     left = {
         "one": {
@@ -840,11 +840,11 @@ def test_merge_same_dicts_different_keys():
         },
     }
 
-    assert elective.ElectiveConfig._merge2(left, right) == expected
-    assert elective.ElectiveConfig._merge2(right, left) == expected
+    assert elective.ElectiveConfig._merge(left, right) == expected
+    assert elective.ElectiveConfig._merge(right, left) == expected
 
 
-def test_merge_different_dicts():
+def test__merge_different_dicts():
     """Should merge the dicts into separate dicts."""
     left = {
         "one": {
@@ -874,11 +874,11 @@ def test_merge_different_dicts():
         },
     }
 
-    assert elective.ElectiveConfig._merge2(left, right) == expected
-    assert elective.ElectiveConfig._merge2(right, left) == expected
+    assert elective.ElectiveConfig._merge(left, right) == expected
+    assert elective.ElectiveConfig._merge(right, left) == expected
 
 
-def test_merge_lists_with_dicts():
+def test__merge_lists_with_dicts():
     """Should merge the lists into one list."""
     left = {
         "one": [
@@ -926,7 +926,7 @@ def test_merge_lists_with_dicts():
         ],
     }
 
-    assert elective.ElectiveConfig._merge2(left, right) == expected
+    assert elective.ElectiveConfig._merge(left, right) == expected
 
     expected = {
         "one": [
@@ -949,10 +949,10 @@ def test_merge_lists_with_dicts():
         ],
     }
 
-    assert elective.ElectiveConfig._merge2(right, left) == expected
+    assert elective.ElectiveConfig._merge(right, left) == expected
 
 
-def test_merge_lists_with_lists():
+def test__merge_lists_with_lists():
     """Should merge the lists into one list."""
     left = {
         "one": [
@@ -1000,7 +1000,7 @@ def test_merge_lists_with_lists():
         ],
     }
 
-    assert elective.ElectiveConfig._merge2(left, right) == expected
+    assert elective.ElectiveConfig._merge(left, right) == expected
 
     expected = {
         "one": [
@@ -1023,16 +1023,16 @@ def test_merge_lists_with_lists():
         ],
     }
 
-    assert elective.ElectiveConfig._merge2(right, left) == expected
+    assert elective.ElectiveConfig._merge(right, left) == expected
 
 
-def test_merge_type_errors():
+def test__merge_type_errors():
     """Should raise mis-matched type errors."""
     with pytest.raises(TypeError):
         left = 1
         right = elective.State((1, "right"))
 
-        elective.ElectiveConfig._merge2(left, right)
+        elective.ElectiveConfig._merge(left, right)
 
     with pytest.raises(TypeError):
         left = {
@@ -1044,7 +1044,7 @@ def test_merge_type_errors():
             ],
         }
 
-        elective.ElectiveConfig._merge2(left, right)
+        elective.ElectiveConfig._merge(left, right)
 
     with pytest.raises(TypeError):
         left = {
@@ -1056,7 +1056,7 @@ def test_merge_type_errors():
             },
         }
 
-        elective.ElectiveConfig._merge2(left, right)
+        elective.ElectiveConfig._merge(left, right)
 
 
 def test__make_stateful_none():
