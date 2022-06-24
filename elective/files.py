@@ -18,113 +18,123 @@ import toml
 from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
 
+from .config import Configuration
 from .exceptions import ElectiveFileLoadingError
 
 
-def _load_file(
-    fn,
-    loader=toml.load,
-    decode_exc=toml.TomlDecodeError,
-    section=None,
-    raise_on_error=True,
-):
-    """Load a configuration file.
+class FileConfiguration(Configuration):
+    """File configuration loader for the client program."""
 
-    Load a configuration file, optionally only returning the specified
-    sub-dictionary ``section``, as in a ``tool`` section of a
-    ``pyproject.toml`` file.
+    def __init__(self, *args, **kwargs):
+        """Initialize a client argument parser."""
+        formats = [
+            "toml",
+            "json",
+            "yaml",
+            "bespon",
+        ]
 
-    Parameters
-    ----------
-    loader : function
-        A function to load and parse the configuration file, such as
-        ``toml.load()``.
-    fn : string
-        The path of the file to load.
-    section : string
-        Optional section of the file to load.
-    raise_on_error : boolean
-        Raise exception on error, or fail silently and return an empty
-        dict.  Default is ``True``.
+        self.formats = []
+        order = kwargs.pop("order", [])
+        for format in formats:
+            if format in order:
+                self.formats.append(format)
 
-    Returns
-    -------
-    dict
-       Dictionary corresponding to the data in the TOML file.
+        # Call the super.
+        super().__init__(*args, **kwargs)
 
-    Raises
-    ------
-    elective.ElectiveFileLoadingError
-        Raised if the configuration file does not exist, is not
-        readable, or is not parsable for a given format.
-    """
-    # Check if ``fn`` is a file.  Raise or return if not.
-    if not Path(fn).is_file():
-        if raise_on_error:
-            raise ElectiveFileLoadingError(f"file {fn} not found")
-        else:
-            return {}
-
-    # Return the loaded data.  Raise or return on any problems.
-    try:
-        with open(fn, "r") as f:
-            contents = loader(f)
-
-            if section:
-                for k in section.lstrip("[").rstrip("]").split("."):
-                    contents = contents[k]
-                return contents
-            else:
-                return contents
-
-    except (decode_exc, FileNotFoundError) as error:
-        if raise_on_error:
-            raise ElectiveFileLoadingError(str(error))
-        else:
-            return {}
-
-
-def load_toml_file(fn, section=None, raise_on_error=True):
-    """Load a TOML file."""
-    return _load_file(
+    @staticmethod
+    def _load_file(
         fn,
         loader=toml.load,
         decode_exc=toml.TomlDecodeError,
-        section=section,
-        raise_on_error=raise_on_error,
-    )
+        section=None,
+        raise_on_error=True,
+    ):
+        """Load a configuration file.
 
+        Load a configuration file, optionally only returning the specified
+        sub-dictionary ``section``, as in a ``tool`` section of a
+        ``pyproject.toml`` file.
 
-def load_json_file(fn, section=None, raise_on_error=True):
-    """Load a JSON file."""
-    return _load_file(
-        fn,
-        loader=json.load,
-        decode_exc=json.JSONDecodeError,
-        section=section,
-        raise_on_error=raise_on_error,
-    )
+        Parameters
+        ----------
+        loader : function
+            A function to load and parse the configuration file, such as
+            ``toml.load()``.
+        fn : string
+            The path of the file to load.
+        section : string
+            Optional section of the file to load.
+        raise_on_error : boolean
+            Raise exception on error, or fail silently and return an empty
+            dict.  Default is ``True``.
 
+        Returns
+        -------
+        dict
+           Dictionary corresponding to the data in the file.
 
-def load_yaml_file(fn, section=None, raise_on_error=True):
-    """Load a YAML file."""
-    yaml = YAML(typ="safe")
+        Raises
+        ------
+        elective.ElectiveFileLoadingError
+            Raised if the configuration file does not exist, is not
+            readable, or is not parsable for a given format.
+        """
+        # Check if ``fn`` is a file.  Raise or return if not.
+        if not Path(fn).is_file():
+            if raise_on_error:
+                raise ElectiveFileLoadingError(f"file {fn} not found")
+            else:
+                return {}
 
-    return _load_file(
-        fn,
-        loader=yaml.load,
-        decode_exc=YAMLError,
-        section=section,
-        raise_on_error=raise_on_error,
-    )
+        # Return the loaded data.  Raise or return on any problems.
+        try:
+            with open(fn, "r") as f:
+                contents = loader(f)
 
+                if section:
+                    for k in section.lstrip("[").rstrip("]").split("."):
+                        contents = contents[k]
 
-def load_bespon_file(fn, section=None, raise_on_error=True):
-    """Load a BespON file."""
-    return _load_file(
-        fn,
-        loader=bespon.load,
-        decode_exc=bespon.erring.DecodingException,
-        section=section,
-        raise_on_error=raise_on_error,
-    )
+                return contents
+
+        except (decode_exc, FileNotFoundError) as error:
+            if raise_on_error:
+                raise ElectiveFileLoadingError(str(error))
+            else:
+                return {}
+
+    def load(self, *args, **kwargs):
+        """Load file configuration."""
+        loaders = {
+            "toml": {
+                "loader": toml.load,
+                "exc": toml.TomlDecodeError,
+            },
+            "json": {
+                "loader": json.load,
+                "exc": json.JSONDecodeError,
+            },
+            "yaml": {
+                "loader": YAML(typ="safe").load,
+                "exc": YAMLError,
+            },
+            "bespon": {
+                "loader": bespon.load,
+                "exc": bespon.erring.DecodingException,
+            },
+        }
+
+        fn = f"{kwargs.pop('fn')}"
+        section = kwargs.pop("section", None)
+        raise_on_error = kwargs.pop("raise_on_error", True)
+
+        for format in self.formats:
+            self.options[format] = FileConfiguration._load_file(
+                f"{fn}.{format}",
+                loader=loaders[format]["loader"],
+                decode_exc=loaders[format]["exc"],
+                section=section,
+                raise_on_error=raise_on_error,
+            )

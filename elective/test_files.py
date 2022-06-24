@@ -15,6 +15,7 @@ import json
 import bespon
 import pytest
 import toml
+from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
 
 import elective
@@ -22,13 +23,18 @@ import elective
 
 def test_load_toml_file_no_file():
     """Should handle no file."""
-    actual = elective.load_toml_file("", raise_on_error=False)
+    actual = elective.FileConfiguration._load_file(
+        fn="",
+        raise_on_error=False,
+    )
     expected = {}
 
     assert actual == expected
 
     with pytest.raises(elective.ElectiveFileLoadingError):
-        elective.load_toml_file("")
+        elective.FileConfiguration._load_file(
+            fn="",
+        )
 
 
 def test_load_toml_file_bad_file(fs):
@@ -39,14 +45,16 @@ def test_load_toml_file_bad_file(fs):
     with open(fn, "w") as file:
         file.write("TOML sucks")
 
-    actual = elective.load_toml_file(fn, raise_on_error=False)
+    actual = elective.FileConfiguration._load_file(
+        fn=fn,
+        raise_on_error=False,
+    )
     expected = {}
 
     assert actual == expected
 
-    # with pytest.raises(toml.TomlDecodeError):
     with pytest.raises(elective.ElectiveFileLoadingError):
-        elective.load_toml_file(fn)
+        elective.FileConfiguration._load_file(fn)
 
 
 def test_load_toml_file_good_file(fs):
@@ -57,7 +65,7 @@ def test_load_toml_file_good_file(fs):
     with open(fn, "w") as file:
         file.write("[option]\n\ntoml = 'is cool'\n")
 
-    actual = elective.load_toml_file(fn)
+    actual = elective.FileConfiguration._load_file(fn)
     expected = {
         "option": {
             "toml": "is cool",
@@ -83,7 +91,7 @@ yaml = 'is not cool'
 """
         )
 
-    actual = elective.load_toml_file(fn, section="[tool.option]")
+    actual = elective.FileConfiguration._load_file(fn, section="[tool.option]")
     expected = {
         "yaml": "is not cool",
     }
@@ -93,13 +101,22 @@ yaml = 'is not cool'
 
 def test_load_json_file_no_file():
     """Should handle no file."""
-    actual = elective.load_json_file("", raise_on_error=False)
+    actual = elective.FileConfiguration._load_file(
+        "",
+        loader=json.load,
+        decode_exc=json.JSONDecodeError,
+        raise_on_error=False,
+    )
     expected = {}
 
     assert actual == expected
 
     with pytest.raises(elective.ElectiveFileLoadingError):
-        elective.load_json_file("")
+        elective.FileConfiguration._load_file(
+            "",
+            loader=json.load,
+            decode_exc=json.JSONDecodeError,
+        )
 
 
 def test_load_json_file_bad_file(fs):
@@ -110,14 +127,22 @@ def test_load_json_file_bad_file(fs):
     with open(fn, "w") as file:
         file.write("JSON sucks")
 
-    actual = elective.load_json_file(fn, raise_on_error=False)
+    actual = elective.FileConfiguration._load_file(
+        fn,
+        loader=json.load,
+        decode_exc=json.JSONDecodeError,
+        raise_on_error=False,
+    )
     expected = {}
 
     assert actual == expected
 
-    # with pytest.raises(json.JSONDecodeError):
     with pytest.raises(elective.ElectiveFileLoadingError):
-        elective.load_json_file(fn)
+        elective.FileConfiguration._load_file(
+            "",
+            loader=json.load,
+            decode_exc=json.JSONDecodeError,
+        )
 
 
 def test_load_json_file_good_file(fs):
@@ -128,7 +153,11 @@ def test_load_json_file_good_file(fs):
     with open(fn, "w") as file:
         file.write('{"option": {\n  "json": "is cool"\n  }\n}\n')
 
-    actual = elective.load_json_file(fn)
+    actual = elective.FileConfiguration._load_file(
+        fn,
+        loader=json.load,
+        decode_exc=json.JSONDecodeError,
+    )
     expected = {
         "option": {
             "json": "is cool",
@@ -155,7 +184,12 @@ def test_load_json_file_good_file(fs):
 """
         )
 
-    actual = elective.load_json_file(fn, section="[tool.option]")
+    actual = elective.FileConfiguration._load_file(
+        fn,
+        loader=json.load,
+        decode_exc=json.JSONDecodeError,
+        section="[tool.option]",
+    )
     expected = {
         "yaml": "is not cool",
     }
@@ -165,13 +199,22 @@ def test_load_json_file_good_file(fs):
 
 def test_load_bespon_file_no_file():
     """Should handle no file."""
-    actual = elective.load_bespon_file("", raise_on_error=False)
+    actual = elective.FileConfiguration._load_file(
+        "",
+        loader=bespon.load,
+        decode_exc=bespon.erring.DecodingException,
+        raise_on_error=False,
+    )
     expected = {}
 
     assert actual == expected
 
     with pytest.raises(elective.ElectiveFileLoadingError):
-        elective.load_bespon_file("")
+        elective.FileConfiguration._load_file(
+            "",
+            loader=bespon.load,
+            decode_exc=bespon.erring.DecodingException,
+        )
 
 
 def test_load_bespon_file_bad_file(fs):
@@ -182,14 +225,22 @@ def test_load_bespon_file_bad_file(fs):
     with open(fn, "w") as file:
         file.write("BespON sucks")
 
-    actual = elective.load_bespon_file(fn, raise_on_error=False)
+    actual = elective.FileConfiguration._load_file(
+        fn,
+        loader=bespon.load,
+        decode_exc=bespon.erring.DecodingException,
+        raise_on_error=False,
+    )
     expected = {}
 
     assert actual == expected
 
-    # with pytest.raises(bespon.erring.DecodingException):
     with pytest.raises(elective.ElectiveFileLoadingError):
-        elective.load_bespon_file(fn)
+        elective.FileConfiguration._load_file(
+            fn,
+            loader=bespon.load,
+            decode_exc=bespon.erring.DecodingException,
+        )
 
 
 def test_load_bespon_file_good_file(fs):
@@ -203,7 +254,11 @@ def test_load_bespon_file_good_file(fs):
     with open(fn, "w") as file:
         file.write(content)
 
-    actual = elective.load_bespon_file(fn)
+    actual = elective.FileConfiguration._load_file(
+        fn,
+        loader=bespon.load,
+        decode_exc=bespon.erring.DecodingException,
+    )
     expected = {
         "option": {
             "bespon": "is cool",
@@ -226,7 +281,12 @@ def test_load_bespon_file_good_file(fs):
     with open(fn, "w") as file:
         file.write(content)
 
-    actual = elective.load_bespon_file(fn, section="[tool.option]")
+    actual = elective.FileConfiguration._load_file(
+        fn,
+        loader=bespon.load,
+        decode_exc=bespon.erring.DecodingException,
+        section="[tool.option]",
+    )
     expected = {
         "yaml": "is not cool",
     }
@@ -236,13 +296,22 @@ def test_load_bespon_file_good_file(fs):
 
 def test_load_yaml_file_no_file():
     """Should handle no file."""
-    actual = elective.load_yaml_file("", raise_on_error=False)
+    actual = elective.FileConfiguration._load_file(
+        "",
+        loader=YAML(typ="safe").load,
+        decode_exc=YAMLError,
+        raise_on_error=False,
+    )
     expected = {}
 
     assert actual == expected
 
     with pytest.raises(elective.ElectiveFileLoadingError):
-        elective.load_yaml_file("")
+        elective.FileConfiguration._load_file(
+            "",
+            loader=YAML(typ="safe").load,
+            decode_exc=YAMLError,
+        )
 
 
 def test_load_yaml_file_bad_file(fs):
@@ -259,14 +328,22 @@ def test_load_yaml_file_bad_file(fs):
     with open(fn, "w") as file:
         file.write(content)
 
-    actual = elective.load_yaml_file(fn, raise_on_error=False)
+    actual = elective.FileConfiguration._load_file(
+        fn,
+        loader=YAML(typ="safe").load,
+        decode_exc=YAMLError,
+        raise_on_error=False,
+    )
     expected = {}
 
     assert actual == expected
 
-    # with pytest.raises(YAMLError):
     with pytest.raises(elective.ElectiveFileLoadingError):
-        elective.load_yaml_file(fn)
+        elective.FileConfiguration._load_file(
+            fn,
+            loader=YAML(typ="safe").load,
+            decode_exc=YAMLError,
+        )
 
 
 def test_load_yaml_file_good_file(fs):
@@ -278,7 +355,11 @@ def test_load_yaml_file_good_file(fs):
     with open(fn, "w") as file:
         file.write(content)
 
-    actual = elective.load_yaml_file(fn)
+    actual = elective.FileConfiguration._load_file(
+        fn,
+        loader=YAML(typ="safe").load,
+        decode_exc=YAMLError,
+    )
     expected = {
         "option": {
             "yaml": "is cool",
@@ -295,9 +376,57 @@ def test_load_yaml_file_good_file(fs):
     with open(fn, "w") as file:
         file.write(content)
 
-    actual = elective.load_yaml_file(fn, section="[tool.option]")
+    actual = elective.FileConfiguration._load_file(
+        fn,
+        loader=YAML(typ="safe").load,
+        decode_exc=YAMLError,
+        section="[tool.option]",
+    )
     expected = {
         "yaml": "is not cool",
     }
 
     assert actual == expected
+
+
+def test_load(fs):
+    """Should load a configuration."""
+    # Need a fake file here.
+    fn = ".client"
+    toml_fn = f"{fn}.toml"
+    fs.create_file(toml_fn)
+    with open(toml_fn, "w") as file:
+        file.write("[elective]\n\n[elective.client]\n\nspell-check = true\n")
+
+    json_fn = f"{fn}.json"
+    fs.create_file(json_fn)
+    with open(json_fn, "w") as file:
+        file.write('{"elective": {"client": {"spell-check": true}}}')
+
+    bespon_fn = f"{fn}.bespon"
+    fs.create_file(bespon_fn)
+    with open(bespon_fn, "w") as file:
+        file.write('elective =\n  client =\n    "spell-check" = true\n')
+
+    yaml_fn = f"{fn}.yaml"
+    fs.create_file(yaml_fn)
+    with open(yaml_fn, "w") as file:
+        file.write("---\nelective:\n  client:\n    spell-check: true\n")
+
+    formats = ["toml", "json", "bespon", "yaml"]
+    fc = elective.FileConfiguration(
+        combine="left",
+        order=formats,
+    )
+    fc.load(
+        fn=fn,
+        section="elective.client",
+    )
+
+    expected = {
+        "spell-check": True,
+    }
+
+    for format in formats:
+        assert format in fc.options.keys()
+        assert fc.options[format] == expected
