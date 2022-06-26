@@ -25,4 +25,4 @@ class ElectiveFileLoadingError(Exception):
 
     def __repr__(self):
         """Reproduce an ``ElectiveFileLoadingError``."""
-        return "ElectiveFileLoadingError(" f"message={repr(self.message)}," ")"
+        return f"ElectiveFileLoadingError(message={repr(self.message)},)"
