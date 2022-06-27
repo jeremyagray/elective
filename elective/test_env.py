@@ -2,7 +2,7 @@
 #
 # elective:  a Python configuration loader generator
 #
-# Copyright 2021 Jeremy A Gray <gray@flyquackswim.com>.
+# Copyright 2021-2022 Jeremy A Gray <gray@flyquackswim.com>.
 #
 # SPDX-License-Identifier: MIT
 #
@@ -20,62 +20,161 @@ import elective
 from elective import EnvConfiguration
 
 
+def test__are_keys_indices():
+    """Should determine if keys are list indices."""
+    # They are indices.
+    ds = {
+        "0": "apple",
+        "1": "banana",
+        "2": "orange",
+    }
+
+    assert elective.EnvConfiguration._are_keys_indices(ds) is True
+
+    # Non-integer index.
+    ds = {
+        "zero": "apple",
+        "1": "banana",
+        "2": "orange",
+    }
+
+    assert elective.EnvConfiguration._are_keys_indices(ds) is False
+
+    # Wrong start.
+    ds = {
+        "3": "apple",
+        "1": "banana",
+        "2": "orange",
+    }
+
+    assert elective.EnvConfiguration._are_keys_indices(ds) is False
+
+    # Non-sequential.
+    ds = {
+        "0": "apple",
+        "2": "banana",
+        "3": "orange",
+    }
+
+    assert elective.EnvConfiguration._are_keys_indices(ds) is False
+
+
+def test__is_listdict():
+    """Should determine if keys are list indices."""
+    # They are indices.
+    ds = {
+        "0": "apple",
+        "1": "banana",
+        "2": "orange",
+    }
+
+    assert elective.EnvConfiguration._is_listdict(ds) is True
+
+    # Non-integer index.
+    ds = {
+        "zero": "apple",
+        "1": "banana",
+        "2": "orange",
+    }
+
+    assert elective.EnvConfiguration._is_listdict(ds) is False
+
+    # Wrong start.
+    ds = {
+        "3": "apple",
+        "1": "banana",
+        "2": "orange",
+    }
+
+    assert elective.EnvConfiguration._is_listdict(ds) is False
+
+    # Non-sequential.
+    ds = {
+        "0": "apple",
+        "2": "banana",
+        "3": "orange",
+    }
+
+    assert elective.EnvConfiguration._is_listdict(ds) is False
+
+
+def test__convert_listdict_to_list():
+    """Should convert listdict to list."""
+    listdict = {
+        "0": "apple",
+        "1": "banana",
+        "2": "orange",
+    }
+
+    expected = [
+        "apple",
+        "banana",
+        "orange",
+    ]
+
+    assert elective.EnvConfiguration._convert_dict_to_list(listdict) == expected
+
+
 def test_load_no_env():
     """Should handle no environment."""
     env = EnvConfiguration(prefix="ELECTIVE_TEST_")
-    actual = env.options
-    expected = {}
-
-    assert actual == expected
-
-
-@pytest.mark.parametrize(
-    "val",
-    ("true", "yes", "1"),
-)
-def test_load_env_boolean_true(val, monkeypatch):
-    """Should load a boolean variable from the environment."""
-    monkeypatch.setenv("ELECTIVE_TEST_CHECK", val)
-    monkeypatch.setenv("ELECTIVE_TEST_NO_CHECK", val)
-
-    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
     env.load()
 
-    assert elective.process_boolean("check", env.options) is True
-    assert elective.process_boolean("no_check", env.options) is False
+    assert env.options == {}
 
-
-@pytest.mark.parametrize(
-    "val",
-    ("false", "no", "0"),
-)
-def test__load_env_boolean_false(val, monkeypatch):
-    """Should load a boolean variable from the environment."""
-    monkeypatch.setenv("ELECTIVE_TEST_CHECK", val)
-    monkeypatch.setenv("ELECTIVE_TEST_NO_CHECK", val)
-
-    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
+    env = EnvConfiguration()
     env.load()
 
-    assert elective.process_boolean("check", env.options) is False
-    assert elective.process_boolean("no_check", env.options) is True
+    assert env.options == {}
 
 
-def test_load_env_bad_boolean(monkeypatch):
-    """Should handle bad boolean variables from the environment."""
+def test_load_multiple_definitions(monkeypatch):
+    """Should raise on multiple definitions."""
     monkeypatch.setenv("ELECTIVE_TEST_CHECK", "true")
-    monkeypatch.setenv("ELECTIVE_TEST_NO_CHECK", "false")
+    monkeypatch.setenv("ELECTIVE_TEST_CHECK__ONE__ONE", "1")
+    monkeypatch.setenv("ELECTIVE_TEST_CHECK__ONE__TWO", "2")
+    monkeypatch.setenv("ELECTIVE_TEST_CHECK__ONE__THREE", "3")
+    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
+
+    with pytest.raises(Exception) as exc:
+        env.load()
+
+    assert "defined multiple times" in str(exc.value)
+
+
+def test_load_undefined(monkeypatch):
+    """Should raise ``KeyError`` on undefined variables."""
+    monkeypatch.setenv("ELECTIVE_TEST_CHECK", "true")
 
     env = EnvConfiguration(prefix="ELECTIVE_TEST_")
     env.load()
 
-    assert elective.process_boolean("bob", env.options) is None
+    with pytest.raises(KeyError):
+        env.options["BOB"]
+
+
+@pytest.mark.parametrize(
+    "val",
+    ("true", "yes", "1", "false", "no", "0"),
+)
+def test_load_boolean(val, monkeypatch):
+    """Should load a boolean variable from the environment."""
+    monkeypatch.setenv("ELECTIVE_TEST_CHECK", val)
+    monkeypatch.setenv("ELECTIVE_TEST_NO_CHECK", val)
+
+    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
+    env.load()
+
+    assert env.options == {
+        "CHECK": val,
+        "NO_CHECK": val,
+    }
 
 
 @given(
     str=st.text(alphabet=st.characters(blacklist_categories=("Cc", "Cs"))),
 )
-def test_load_env_string(str):
+def test_load_string(str):
     """Should load a string variable from the environment."""
     with pytest.MonkeyPatch().context() as mp:
         mp.setenv("ELECTIVE_TEST_FOO", str)
@@ -83,23 +182,13 @@ def test_load_env_string(str):
         env = EnvConfiguration(prefix="ELECTIVE_TEST_")
         env.load()
 
-        assert elective.process_string("foo", env.options) == str
-
-
-def test_load_env_bad_string(monkeypatch):
-    """Should handle bad string variables from the environment."""
-    monkeypatch.setenv("ELECTIVE_TEST_FOO", "bar")
-
-    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
-    env.load()
-
-    assert elective.process_string("bar", env.options) is None
+        assert env.options["FOO"] == str
 
 
 @given(
     val=st.integers(),
 )
-def test_load_env_integer(val):
+def test_load_integer(val):
     """Should load a integer variable from the environment."""
     with pytest.MonkeyPatch().context() as mp:
         mp.setenv("ELECTIVE_TEST_NUM", str(val))
@@ -107,27 +196,7 @@ def test_load_env_integer(val):
         env = EnvConfiguration(prefix="ELECTIVE_TEST_")
         env.load()
 
-        assert elective.process_integer("num", env.options) == val
-
-
-def test_load_env_missing_integer(monkeypatch):
-    """Should handle missing integer variables from the environment."""
-    monkeypatch.setenv("ELECTIVE_TEST_NUM", "314")
-
-    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
-    env.load()
-
-    assert elective.process_integer("bar", env.options) is None
-
-
-def test_load_env_non_integer(monkeypatch):
-    """Should handle non-integer variables from the environment."""
-    monkeypatch.setenv("ELECTIVE_TEST_NUM", "3.14")
-
-    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
-    env.load()
-
-    assert elective.process_integer("num", env.options) is None
+        assert int(env.options["NUM"]) == val
 
 
 @given(
@@ -142,32 +211,12 @@ def test_load_env_float(val):
         env.load()
 
         if math.isnan(val):
-            assert math.isnan(elective.process_float("num", env.options)) is True
+            assert math.isnan(float(env.options["NUM"]))
         else:
-            assert elective.process_float("num", env.options) == val
+            assert float(env.options["NUM"]) == val
 
 
-def test_load_env_missing_float(monkeypatch):
-    """Should handle missing float variables from the environment."""
-    monkeypatch.setenv("ELECTIVE_TEST_NUM", "3.14")
-
-    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
-    env.load()
-
-    assert elective.process_float("bar", env.options) is None
-
-
-def test_load_env_non_float(monkeypatch):
-    """Should handle non-float variables from the environment."""
-    monkeypatch.setenv("ELECTIVE_TEST_NUM", "bar")
-
-    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
-    env.load()
-
-    assert elective.process_float("num", env.options) is None
-
-
-def test_load_env_list(monkeypatch):
+def test_load_list(monkeypatch):
     """Should load a list variable from the environment."""
     monkeypatch.setenv("ELECTIVE_TEST_LIST__0", "0")
     monkeypatch.setenv("ELECTIVE_TEST_LIST__1", "1")
@@ -177,33 +226,55 @@ def test_load_env_list(monkeypatch):
     env = EnvConfiguration(prefix="ELECTIVE_TEST_")
     env.load()
 
-    assert elective.process_list("list", env.options) == ["0", "1", "2", "3"]
+    assert env.options["LIST"] == ["0", "1", "2", "3"]
 
 
-def test_load_env_missing_list(monkeypatch):
-    """Should handle missing list variables from the environment."""
-    monkeypatch.setenv("ELECTIVE_TEST_LIST__0", "0")
-    monkeypatch.setenv("ELECTIVE_TEST_LIST__1", "1")
-    monkeypatch.setenv("ELECTIVE_TEST_LIST__2", "2")
-    monkeypatch.setenv("ELECTIVE_TEST_LIST__3", "3")
-
-    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
-    env.load()
-
-    assert elective.process_list("bar", env.options) is None
-
-
-def test_load_env_non_list(monkeypatch):
-    """Should handle non-list variables from the environment."""
-    monkeypatch.setenv("ELECTIVE_TEST_DICT__ONE", "uno")
-    monkeypatch.setenv("ELECTIVE_TEST_DICT__TWO", "dos")
-    monkeypatch.setenv("ELECTIVE_TEST_DICT__THREE", "tres")
-    monkeypatch.setenv("ELECTIVE_TEST_DICT__FOUR", "cuatro")
+def test_load_list_nested_in_dict(monkeypatch):
+    """Should load a list nested in a dict."""
+    monkeypatch.setenv("ELECTIVE_TEST_DICT__LIST__0", "0")
+    monkeypatch.setenv("ELECTIVE_TEST_DICT__LIST__1", "1")
+    monkeypatch.setenv("ELECTIVE_TEST_DICT__LIST__2", "2")
+    monkeypatch.setenv("ELECTIVE_TEST_DICT__LIST__3", "3")
 
     env = EnvConfiguration(prefix="ELECTIVE_TEST_")
     env.load()
 
-    assert elective.process_list("dict", env.options) is None
+    expected = {
+        "DICT": {
+            "LIST": [
+                "0",
+                "1",
+                "2",
+                "3",
+            ],
+        },
+    }
+
+    assert env.options == expected
+
+
+def test_load_list_nested_in_list(monkeypatch):
+    """Should load a list nested in a list."""
+    monkeypatch.setenv("ELECTIVE_TEST_LIST__0__0", "0")
+    monkeypatch.setenv("ELECTIVE_TEST_LIST__0__1", "1")
+    monkeypatch.setenv("ELECTIVE_TEST_LIST__0__2", "2")
+    monkeypatch.setenv("ELECTIVE_TEST_LIST__0__3", "3")
+
+    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
+    env.load()
+
+    expected = {
+        "LIST": [
+            [
+                "0",
+                "1",
+                "2",
+                "3",
+            ],
+        ],
+    }
+
+    assert env.options == expected
 
 
 def test_load_env_dict(monkeypatch):
@@ -216,38 +287,180 @@ def test_load_env_dict(monkeypatch):
     env = EnvConfiguration(prefix="ELECTIVE_TEST_")
     env.load()
 
-    actual = elective.process_dict("dict", env.options)
     expected = {
-        "ONE": "uno",
-        "TWO": "dos",
-        "THREE": "tres",
-        "FOUR": "cuatro",
+        "DICT": {
+            "ONE": "uno",
+            "TWO": "dos",
+            "THREE": "tres",
+            "FOUR": "cuatro",
+        },
     }
 
-    assert actual == expected
+    assert env.options == expected
 
 
-def test_load_env_missing_dict(monkeypatch):
-    """Should handle missing dict variables from the environment."""
-    monkeypatch.setenv("ELECTIVE_TEST_DICT__ONE", "uno")
-    monkeypatch.setenv("ELECTIVE_TEST_DICT__TWO", "dos")
-    monkeypatch.setenv("ELECTIVE_TEST_DICT__THREE", "tres")
-    monkeypatch.setenv("ELECTIVE_TEST_DICT__FOUR", "cuatro")
+def test_load_mixed(monkeypatch):
+    """Should load mixed options from the environment."""
+    vals = [
+        ("ELECTIVE_TEST_BREAKFAST", "toast"),
+        ("ELECTIVE_TEST_FRUITLIST__0", "apple"),
+        ("ELECTIVE_TEST_FRUITLIST__1", "banana"),
+        ("ELECTIVE_TEST_FRUITLIST__2", "orange"),
+        ("ELECTIVE_TEST_FOOD__FRUITLIST__0", "apple"),
+        ("ELECTIVE_TEST_FOOD__FRUITLIST__1", "banana"),
+        ("ELECTIVE_TEST_FOOD__FRUITLIST__2", "orange"),
+        ("ELECTIVE_TEST_FRUIT__APPLE", "2"),
+        ("ELECTIVE_TEST_FRUIT__BANANA", "3"),
+        ("ELECTIVE_TEST_FRUIT__ORANGE", "5"),
+        ("ELECTIVE_TEST_FOOD__FRUIT__APPLE", "2"),
+        ("ELECTIVE_TEST_FOOD__FRUIT__BANANA", "3"),
+        ("ELECTIVE_TEST_FOOD__FRUIT__ORANGE", "5"),
+    ]
+
+    for (name, val) in vals:
+        monkeypatch.setenv(name, val)
+
+    expected = {
+        "BREAKFAST": "toast",
+        "FRUITLIST": [
+            "apple",
+            "banana",
+            "orange",
+        ],
+        "FRUIT": {
+            "APPLE": "2",
+            "BANANA": "3",
+            "ORANGE": "5",
+        },
+        "FOOD": {
+            "FRUITLIST": [
+                "apple",
+                "banana",
+                "orange",
+            ],
+            "FRUIT": {
+                "APPLE": "2",
+                "BANANA": "3",
+                "ORANGE": "5",
+            },
+        },
+    }
 
     env = EnvConfiguration(prefix="ELECTIVE_TEST_")
     env.load()
 
-    assert elective.process_dict("bar", env.options) is None
+    assert env.options == expected
 
 
-def test__load_env_non_dict(monkeypatch):
-    """Should handle non-dict variables from the environment."""
-    monkeypatch.setenv("ELECTIVE_TEST_DICT__0", "0")
-    monkeypatch.setenv("ELECTIVE_TEST_DICT__1", "1")
-    monkeypatch.setenv("ELECTIVE_TEST_DICT__2", "2")
-    monkeypatch.setenv("ELECTIVE_TEST_DICT__3", "3")
+def test_load_mixed_no_prefix(monkeypatch):
+    """Should load mixed options from the environment without prefixes."""
+    vals = [
+        ("ELECTIVE_TEST_BREAKFAST", "toast"),
+        ("ELECTIVE_TEST_FRUITLIST__0", "apple"),
+        ("ELECTIVE_TEST_FRUITLIST__1", "banana"),
+        ("ELECTIVE_TEST_FRUITLIST__2", "orange"),
+        ("ELECTIVE_TEST_FOOD__FRUITLIST__0", "apple"),
+        ("ELECTIVE_TEST_FOOD__FRUITLIST__1", "banana"),
+        ("ELECTIVE_TEST_FOOD__FRUITLIST__2", "orange"),
+        ("ELECTIVE_TEST_FRUIT__APPLE", "2"),
+        ("ELECTIVE_TEST_FRUIT__BANANA", "3"),
+        ("ELECTIVE_TEST_FRUIT__ORANGE", "5"),
+        ("ELECTIVE_TEST_FOOD__FRUIT__APPLE", "2"),
+        ("ELECTIVE_TEST_FOOD__FRUIT__BANANA", "3"),
+        ("ELECTIVE_TEST_FOOD__FRUIT__ORANGE", "5"),
+    ]
+
+    for (name, val) in vals:
+        monkeypatch.setenv(
+            f"ELECTIVE_{name.removeprefix('ELECTIVE_TEST_')}",
+            val,
+        )
+
+    expected = {
+        "BREAKFAST": "toast",
+        "FRUITLIST": [
+            "apple",
+            "banana",
+            "orange",
+        ],
+        "FRUIT": {
+            "APPLE": "2",
+            "BANANA": "3",
+            "ORANGE": "5",
+        },
+        "FOOD": {
+            "FRUITLIST": [
+                "apple",
+                "banana",
+                "orange",
+            ],
+            "FRUIT": {
+                "APPLE": "2",
+                "BANANA": "3",
+                "ORANGE": "5",
+            },
+        },
+    }
+
+    env = EnvConfiguration()
+    env.load()
+
+    assert env.options == expected
+
+
+def test_dump_no_export(monkeypatch):
+    """Should dump options, without export, to the environment."""
+    vals = [
+        ("ELECTIVE_TEST_BREAKFAST", "toast"),
+        ("ELECTIVE_TEST_FRUITLIST__0", "apple"),
+        ("ELECTIVE_TEST_FRUITLIST__1", "banana"),
+        ("ELECTIVE_TEST_FRUITLIST__2", "orange"),
+        ("ELECTIVE_TEST_FOOD__FRUITLIST__0", "apple"),
+        ("ELECTIVE_TEST_FOOD__FRUITLIST__1", "banana"),
+        ("ELECTIVE_TEST_FOOD__FRUITLIST__2", "orange"),
+        ("ELECTIVE_TEST_FRUIT__APPLE", "2"),
+        ("ELECTIVE_TEST_FRUIT__BANANA", "3"),
+        ("ELECTIVE_TEST_FRUIT__ORANGE", "5"),
+        ("ELECTIVE_TEST_FOOD__FRUIT__APPLE", "2"),
+        ("ELECTIVE_TEST_FOOD__FRUIT__BANANA", "3"),
+        ("ELECTIVE_TEST_FOOD__FRUIT__ORANGE", "5"),
+    ]
+
+    for (name, val) in vals:
+        monkeypatch.setenv(name, val)
 
     env = EnvConfiguration(prefix="ELECTIVE_TEST_")
     env.load()
 
-    assert elective.process_dict("dict", env.options) is None
+    output = env.dump()
+    for (name, val) in vals:
+        assert f"export {name}='{val}'" in output
+
+
+def test_dump_export(monkeypatch):
+    """Should dump options to the environment."""
+    vals = [
+        ("ELECTIVE_TEST_BREAKFAST", "toast"),
+        ("ELECTIVE_TEST_FRUITLIST__0", "apple"),
+        ("ELECTIVE_TEST_FRUITLIST__1", "banana"),
+        ("ELECTIVE_TEST_FRUITLIST__2", "orange"),
+        ("ELECTIVE_TEST_FOOD__FRUITLIST__0", "apple"),
+        ("ELECTIVE_TEST_FOOD__FRUITLIST__1", "banana"),
+        ("ELECTIVE_TEST_FOOD__FRUITLIST__2", "orange"),
+        ("ELECTIVE_TEST_FRUIT__APPLE", "2"),
+        ("ELECTIVE_TEST_FRUIT__BANANA", "3"),
+        ("ELECTIVE_TEST_FRUIT__ORANGE", "5"),
+        ("ELECTIVE_TEST_FOOD__FRUIT__APPLE", "2"),
+        ("ELECTIVE_TEST_FOOD__FRUIT__BANANA", "3"),
+        ("ELECTIVE_TEST_FOOD__FRUIT__ORANGE", "5"),
+    ]
+
+    for (name, val) in vals:
+        monkeypatch.setenv(name, val)
+
+    env = EnvConfiguration(prefix="ELECTIVE_TEST_")
+    env.load()
+
+    output = env.dump(export=False)
+    for (name, val) in vals:
+        assert f"{name}='{val}'" in output
