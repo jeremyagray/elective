@@ -21,28 +21,24 @@ class CliConfiguration(Configuration):
 
     def __init__(self, *args, **kwargs):
         """Initialize a client argument parser."""
-        # Initialize ourself.
-        self.parser = argparse.ArgumentParser()
-
         # Call the super.
         super().__init__(*args, **kwargs)
 
-    def _set_description(self, description):
-        """Set the argparse description."""
-        self.parser.description = description
-
-    def reset_parser(self):
-        """Reset an argument parser."""
+        # Initialize ourself.
         self.parser = argparse.ArgumentParser()
+
+        # Pop our arguments.
+        self.parser.description = kwargs.pop("description", None)
+        self.options = kwargs.pop("options")
 
     def _register_boolean(self, **kwargs):
         """Register a boolean argument in the parser."""
         self.parser.add_argument(
-            "-{kwargs.get('short', None)}",
-            "--{kwargs.get('long', None)}",
+            f"-{kwargs.get('short', None)}",
+            f"--{kwargs.get('long', None)}",
             dest=kwargs.get("dest", None),
-            default=None,
-            action=None,
+            default=kwargs.get("default", None),
+            action=kwargs.get("action", None),
             help=kwargs.get("help", None),
         )
 
@@ -115,30 +111,47 @@ class CliConfiguration(Configuration):
             dest=dest,
         )
 
-    def config(self, ec):
+    def config(self):
         """Configure a client argument parser."""
-        # Set the program description.
-        self._set_description(ec.elective["description"])
-
         # Add any options to the parser.
-        for (k, v) in ec.options.items():
+        for (k, v) in self.options.items():
             if "cli" in v["providers"]:
+                dest = k
+                # Optionally set ``dest``.
+                try:
+                    dest = v["dest"]
+                except (KeyError):
+                    pass
+
                 if v["type"] == "display":
                     self._register_display_action(
                         name=k,
-                        dest=v["dest"] or k,
+                        dest=dest,
                         default=v["default"],
                         help=v["help"],
                     )
-                elif v["type"] == "boolean":
+                elif v["type"] == "boolean_group":
                     self._register_boolean_group(
-                        dest=v["dest"] or k,
+                        dest=dest,
                         help=v["help"],
                         short_pos=v["short_pos"],
                         short_neg=v["short_neg"],
                         long_pos=v["long_pos"],
                         long_neg=v["long_neg"],
                     )
+                elif v["type"] == "boolean":
+                    self._register_boolean(
+                        action=v["action"],
+                        default=v["default"],
+                        dest=dest,
+                        help=v["help"],
+                        long=v["long"],
+                        short=v["short"],
+                    )
+
+    def reset_parser(self):
+        """Reset an argument parser."""
+        self.parser = argparse.ArgumentParser()
 
     def load(self, *args, **kwargs):
         """Load CLI arguments."""
@@ -146,4 +159,4 @@ class CliConfiguration(Configuration):
         argv = kwargs.pop("argv", None)
 
         # Convert the argparse `Namespace()` object to a dict.
-        self.options = vars(self.parser.parse_args(args=argv))
+        self.options = vars(self.parser.parse_args(argv))
