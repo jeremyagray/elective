@@ -159,4 +159,7 @@ class CliConfiguration(Configuration):
         argv = kwargs.pop("argv", None)
 
         # Convert the argparse `Namespace()` object to a dict.
-        self.options = vars(self.parser.parse_args(argv))
+        if argv is not None:
+            self.options = vars(self.parser.parse_args(argv))
+        else:
+            self.options = vars(self.parser.parse_args())
