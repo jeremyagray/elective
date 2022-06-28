@@ -392,23 +392,23 @@ def test_load_yaml_file_good_file(fs):
 def test_load(fs):
     """Should load a configuration."""
     # Need a fake file here.
-    fn = ".client"
-    toml_fn = f"{fn}.toml"
+    name = "client"
+    toml_fn = f".{name}.toml"
     fs.create_file(toml_fn)
     with open(toml_fn, "w") as file:
         file.write("[elective]\n\n[elective.client]\n\nspell-check = true\n")
 
-    json_fn = f"{fn}.json"
+    json_fn = f".{name}.json"
     fs.create_file(json_fn)
     with open(json_fn, "w") as file:
         file.write('{"elective": {"client": {"spell-check": true}}}')
 
-    bespon_fn = f"{fn}.bespon"
+    bespon_fn = f".{name}.bespon"
     fs.create_file(bespon_fn)
     with open(bespon_fn, "w") as file:
         file.write('elective =\n  client =\n    "spell-check" = true\n')
 
-    yaml_fn = f"{fn}.yaml"
+    yaml_fn = f".{name}.yaml"
     fs.create_file(yaml_fn)
     with open(yaml_fn, "w") as file:
         file.write("---\nelective:\n  client:\n    spell-check: true\n")
@@ -419,7 +419,7 @@ def test_load(fs):
         order=formats,
     )
     fc.load(
-        fn=fn,
+        fn=name,
         section="elective.client",
     )
 
@@ -430,3 +430,20 @@ def test_load(fs):
     for format in formats:
         assert format in fc.options.keys()
         assert fc.options[format] == expected
+
+
+def test_load_no_file(fs):
+    """Should load a configuration without a file."""
+    # Need a fake file here.
+    name = "client"
+    formats = ["toml"]
+    fc = elective.FileConfiguration(
+        combine="left",
+        order=formats,
+    )
+    fc.load(
+        fn=name,
+        section="elective.client",
+    )
+
+    assert fc.options == {}

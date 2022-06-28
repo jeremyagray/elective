@@ -27,6 +27,9 @@ class FileConfiguration(Configuration):
 
     def __init__(self, *args, **kwargs):
         """Initialize a client argument parser."""
+        # Call the super.
+        super().__init__(*args, **kwargs)
+
         formats = [
             "toml",
             "json",
@@ -34,14 +37,12 @@ class FileConfiguration(Configuration):
             "bespon",
         ]
 
+        self.filename = kwargs.pop("fn", None)
         self.formats = []
         order = kwargs.pop("order", [])
         for format in formats:
             if format in order:
                 self.formats.append(format)
-
-        # Call the super.
-        super().__init__(*args, **kwargs)
 
     @staticmethod
     def _load_file(
@@ -126,15 +127,19 @@ class FileConfiguration(Configuration):
             },
         }
 
-        fn = f"{kwargs.pop('fn')}"
+        fn = kwargs.pop("fn", None)
+        fn = self.filename if not fn else fn
         section = kwargs.pop("section", None)
         raise_on_error = kwargs.pop("raise_on_error", True)
 
         for format in self.formats:
-            self.options[format] = FileConfiguration._load_file(
-                f"{fn}.{format}",
-                loader=loaders[format]["loader"],
-                decode_exc=loaders[format]["exc"],
-                section=section,
-                raise_on_error=raise_on_error,
-            )
+            try:
+                self.options[format] = FileConfiguration._load_file(
+                    f".{fn}.{format}",
+                    loader=loaders[format]["loader"],
+                    decode_exc=loaders[format]["exc"],
+                    section=section,
+                    raise_on_error=raise_on_error,
+                )
+            except (ElectiveFileLoadingError):
+                pass
