@@ -301,6 +301,75 @@ def test_string_option(capsys):
     assert "expected one argument" in capsys.readouterr().err
 
 
+def test_list_option(capsys):
+    """Should load a list option."""
+    # Load CLI options.
+    description = "This is a description."
+    options = {}
+    options["list"] = {
+        "providers": [
+            "cli",
+            "env",
+            "file",
+        ],
+        "type": "list",
+        "default": ["one"],
+        "short": "l",
+        "long": "list",
+        "help": "A list.  Default is ``['one']``.",
+    }
+
+    cli = elective.CliConfiguration(
+        description=description,
+        options=options,
+    )
+    cli.config()
+
+    # No items.
+    cli.load(argv=["-l", ""])
+
+    expected = {
+        "list": [],
+    }
+
+    assert cli.options == expected
+
+    cli.load(argv=["--list", ""])
+    assert cli.options == expected
+
+    # One item.
+    cli.load(argv=["-l", "two"])
+
+    expected = {
+        "list": ["two"],
+    }
+
+    assert cli.options == expected
+
+    cli.load(argv=["--list", "two"])
+    assert cli.options == expected
+
+    # Multiple items.
+    cli.load(argv=["-l", "two,three,four"])
+
+    expected = {
+        "list": ["two", "three", "four"],
+    }
+
+    assert cli.options == expected
+
+    cli.load(argv=["--list", "two,three,four"])
+    assert cli.options == expected
+
+    # No list.
+    with pytest.raises(SystemExit) as error:
+        cli.load(argv=["-l"])
+
+    assert error.type == SystemExit
+    assert error.value.code == 2
+    assert "expected one argument" in capsys.readouterr().err
+
+
 def test_boolean_group_option():
     """Should load a boolean group option."""
     # Load CLI options.

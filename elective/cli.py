@@ -75,6 +75,19 @@ class CliConfiguration(Configuration):
             type=str,
         )
 
+    def _register_list(self, **kwargs):
+        """Register a list argument in the parser."""
+        self.parser.add_argument(
+            f"-{kwargs.get('short', None)}",
+            f"--{kwargs.get('long', None)}",
+            dest=kwargs.get("dest", None),
+            default=kwargs.get("default", None),
+            help=kwargs.get("help", None),
+            type=lambda s: []
+            if len(s) == 0
+            else [item.strip() for item in s.split(",")],
+        )
+
     def _register_boolean_group(self, **kwargs):
         """Register a mutually exclusive boolean group in the parser."""
         group = self.parser.add_mutually_exclusive_group()
@@ -199,6 +212,14 @@ class CliConfiguration(Configuration):
                     )
                 elif v["type"] == "str":
                     self._register_str(
+                        default=v["default"],
+                        dest=dest,
+                        help=v["help"],
+                        long=v["long"],
+                        short=v["short"],
+                    )
+                elif v["type"] == "list":
+                    self._register_list(
                         default=v["default"],
                         dest=dest,
                         help=v["help"],
