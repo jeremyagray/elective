@@ -19,11 +19,41 @@ from hypothesis import strategies as st
 import elective
 
 
-def test_elective_config_interface():
-    """Should have the correct interface."""
-    assert isinstance(elective.ElectiveConfig.__init__, types.FunctionType)
-    assert isinstance(elective.ElectiveConfig.__str__, types.FunctionType)
-    assert isinstance(elective.ElectiveConfig.__repr__, types.FunctionType)
+def test_elective_config_load_no_name(fs):
+    """Should throw ``ValueError`` without a name."""
+    # Create a configuration file.
+    fn = "config.toml"
+    fs.create_file(fn)
+    with open(fn, "w") as f:
+        f.write(
+            """[elective]
+
+description = '''
+This program comes with ABSOLUTELY NO WARRANTY; for details type
+``elective --show-warranty``.  This is free software, and you are welcome
+to redistribute it under certain conditions; type ``elective
+--show-license`` for details.
+'''
+
+combine = "left"
+
+order = [
+  "default",
+  "toml",
+  "json",
+  "yaml",
+  "bespon",
+  "env",
+  "cli",
+]
+"""
+        )
+
+    conf = elective.ElectiveConfig()
+    with pytest.raises(ValueError) as error:
+        conf.load_elective_config(fn)
+
+    assert str(error.value) == "client program name is undefined"
 
 
 def test_elective_config_load_combine_exception(fs):
@@ -264,7 +294,7 @@ order = [
 def test__process_single_option_idempotent():
     """Should return the same dictionary."""
     options = {
-        "type": "boolean",
+        "type": "boolean_group",
         "providers": [
             "cli",
             "env",
@@ -285,7 +315,7 @@ def test__process_single_option_idempotent():
 def test__process_single_option_missing_is_none():
     """Should return the same dictionary."""
     options = {
-        "type": "boolean",
+        "type": "boolean_group",
         "providers": [
             "cli",
             "env",
@@ -299,7 +329,7 @@ def test__process_single_option_missing_is_none():
         "dest": "spell",
     }
     cleaned = {
-        "type": "boolean",
+        "type": "boolean_group",
         "providers": [
             "cli",
             "env",
@@ -320,7 +350,7 @@ def test__process_single_option_missing_is_none():
 def test__process_single_option_extra_is_ignored():
     """Should return the same dictionary."""
     options = {
-        "type": "boolean",
+        "type": "boolean_group",
         "providers": [
             "cli",
             "env",
@@ -336,7 +366,7 @@ def test__process_single_option_extra_is_ignored():
         "yourface": "is ugly",
     }
     cleaned = {
-        "type": "boolean",
+        "type": "boolean_group",
         "providers": [
             "cli",
             "env",
@@ -358,7 +388,7 @@ def test__process_single_option_extra_is_ignored():
 def test__process_option_one_idempotent():
     """Should return the same dictionary."""
     options = {
-        "type": "boolean",
+        "type": "boolean_group",
         "providers": [
             "cli",
             "env",
@@ -380,7 +410,7 @@ def test__process_option_list_idempotent():
     """Should return the same list."""
     options = [
         {
-            "type": "boolean",
+            "type": "boolean_group",
             "providers": [
                 "cli",
                 "env",
@@ -395,7 +425,7 @@ def test__process_option_list_idempotent():
             "dest": "spell",
         },
         {
-            "type": "boolean",
+            "type": "boolean_group",
             "providers": [
                 "cli",
                 "env",
@@ -637,6 +667,145 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     assert conf.options["show-license"] == options["show-license"]
     assert "show-warranty" in conf.options
     assert conf.options["show-warranty"] == options["show-warranty"]
+
+
+def test_elective_config_load_merge(fs):
+    """Should correctly merge options."""
+    # Create an elective configuration file.
+    fn = "config.toml"
+    fs.create_file(fn)
+    with open(fn, "w") as f:
+        f.write(
+            """[elective]
+
+description = "This is a description."
+name = "client"
+combine = "left"
+
+order = [
+  "defaults",
+  "toml",
+  "json",
+  "yaml",
+  "bespon",
+  "env",
+  "cli",
+]
+
+[elective.options]
+
+[elective.options.spell-check]
+
+providers = [
+  "cli",
+  "env",
+  "file",
+]
+type = "boolean_group"
+default = false
+short_pos = "c"
+short_neg = "C"
+long_pos = "spell-check"
+long_neg = "no-spell-check"
+dest = "spell-check"
+help = "Spell check.  Default is no spell checking."
+
+[elective.options.line-wrap]
+
+providers = [
+  "cli",
+  "env",
+  "file",
+]
+type = "boolean_group"
+default = false
+short_pos = "w"
+short_neg = "W"
+long_pos = "wrap"
+long_neg = "no-wrap"
+dest = "line-wrap"
+help = "Wrap lines.  Default is no line wrapping."
+"""
+        )
+
+    # Create a TOML configuration file.
+    toml_fn = ".client.toml"
+    fs.create_file(toml_fn)
+    with open(toml_fn, "w") as f:
+        f.write(
+            """[client]
+spell-check = true
+"""
+        )
+
+    # Create a JSON configuration file.
+    json_fn = ".client.json"
+    fs.create_file(json_fn)
+    with open(json_fn, "w") as f:
+        f.write(
+            """{ "client": {
+    "spell-check": true
+  }
+}
+"""
+        )
+
+    # Left merge.
+    conf = elective.ElectiveConfig()
+    conf.load_elective_config(fn)
+    conf.load_client_config(argv=[])
+
+    assert "line-wrap" in conf.config
+    assert conf.config["line-wrap"] == elective.State((False, "default"))
+
+    assert "spell-check" in conf.config
+    assert conf.config["spell-check"] == elective.State((True, "json"))
+
+    # Right merge.
+    conf = elective.ElectiveConfig()
+    conf.load_elective_config(fn)
+    conf.elective["combine"] = "right"
+    conf.load_client_config(argv=[])
+
+    assert "line-wrap" in conf.config
+    assert conf.config["line-wrap"] == elective.State((False, "default"))
+
+    assert "spell-check" in conf.config
+    assert conf.config["spell-check"] == elective.State((False, "default"))
+
+    # No merge; use last.
+    conf = elective.ElectiveConfig()
+    conf.load_elective_config(fn)
+    conf.elective["combine"] = None
+    conf.load_client_config(argv=[])
+
+    assert "line-wrap" in conf.config
+    assert conf.config["line-wrap"] == elective.State((None, "cli"))
+
+    assert "spell-check" in conf.config
+    assert conf.config["spell-check"] == elective.State((None, "cli"))
+
+    # No merge with non-existing format.
+    conf = elective.ElectiveConfig()
+    conf.load_elective_config(fn)
+    conf.elective["combine"] = None
+    conf.elective["order"].append("unknown")
+    conf.load_client_config(argv=[])
+
+    assert "line-wrap" in conf.config
+    assert conf.config["line-wrap"] == elective.State((None, "cli"))
+
+    assert "spell-check" in conf.config
+    assert conf.config["spell-check"] == elective.State((None, "cli"))
+
+
+def test_load_client_config_not_configured():
+    """Should throw ``ValueError`` if not configured."""
+    conf = elective.ElectiveConfig()
+    with pytest.raises(ValueError) as error:
+        conf.load_client_config(argv=[])
+
+    assert "is not configured" in str(error.value)
 
 
 def test__merge_scalar_into_none():
