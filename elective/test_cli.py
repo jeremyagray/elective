@@ -172,12 +172,21 @@ def test_int_option(capsys):
 
     assert cli.options == expected
 
+    # Non-integer.
     with pytest.raises(SystemExit) as error:
         cli.load(argv=["--errors", "3.14"])
 
     assert error.type == SystemExit
     assert error.value.code == 2
     assert "invalid int value" in capsys.readouterr().err
+
+    # No argument.
+    with pytest.raises(SystemExit) as error:
+        cli.load(argv=["-e"])
+
+    assert error.type == SystemExit
+    assert error.value.code == 2
+    assert "expected one argument" in capsys.readouterr().err
 
 
 def test_float_option(capsys):
@@ -223,12 +232,73 @@ def test_float_option(capsys):
 
     assert cli.options == expected
 
+    # Non-float.
     with pytest.raises(SystemExit) as error:
         cli.load(argv=["-p", "22/7"])
 
     assert error.type == SystemExit
     assert error.value.code == 2
     assert "invalid float value" in capsys.readouterr().err
+
+    # No argument.
+    with pytest.raises(SystemExit) as error:
+        cli.load(argv=["-p"])
+
+    assert error.type == SystemExit
+    assert error.value.code == 2
+    assert "expected one argument" in capsys.readouterr().err
+
+
+def test_string_option(capsys):
+    """Should load a string option."""
+    # Load CLI options.
+    description = "This is a description."
+    options = {}
+    options["message"] = {
+        "providers": [
+            "cli",
+            "env",
+            "file",
+        ],
+        "type": "str",
+        "default": "This is a message.",
+        "short": "m",
+        "long": "message",
+        "help": "A message.  Default is 'This is a message.'.",
+    }
+
+    cli = elective.CliConfiguration(
+        description=description,
+        options=options,
+    )
+    cli.config()
+
+    cli.load(argv=["-m", "Another message."])
+
+    expected = {
+        "message": "Another message.",
+    }
+
+    assert cli.options == expected
+
+    cli.load(argv=["--message", "Another message."])
+    assert cli.options == expected
+
+    cli.load(argv=[])
+
+    expected = {
+        "message": "This is a message.",
+    }
+
+    assert cli.options == expected
+
+    # No message.
+    with pytest.raises(SystemExit) as error:
+        cli.load(argv=["-m"])
+
+    assert error.type == SystemExit
+    assert error.value.code == 2
+    assert "expected one argument" in capsys.readouterr().err
 
 
 def test_boolean_group_option():
