@@ -42,6 +42,17 @@ class CliConfiguration(Configuration):
             help=kwargs.get("help", None),
         )
 
+    def _register_int(self, **kwargs):
+        """Register an integer argument in the parser."""
+        self.parser.add_argument(
+            f"-{kwargs.get('short', None)}",
+            f"--{kwargs.get('long', None)}",
+            dest=kwargs.get("dest", None),
+            default=kwargs.get("default", None),
+            help=kwargs.get("help", None),
+            type=int,
+        )
+
     def _register_boolean_group(self, **kwargs):
         """Register a mutually exclusive boolean group in the parser."""
         group = self.parser.add_mutually_exclusive_group()
@@ -142,6 +153,14 @@ class CliConfiguration(Configuration):
                 elif v["type"] == "boolean":
                     self._register_boolean(
                         action=v["action"],
+                        default=v["default"],
+                        dest=dest,
+                        help=v["help"],
+                        long=v["long"],
+                        short=v["short"],
+                    )
+                elif v["type"] == "int":
+                    self._register_int(
                         default=v["default"],
                         dest=dest,
                         help=v["help"],

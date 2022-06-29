@@ -129,6 +129,57 @@ def test_boolean_option():
     assert cli.options == expected
 
 
+def test_int_option(capsys):
+    """Should load an integer option."""
+    # Load CLI options.
+    description = "This is a description."
+    options = {}
+    options["errors"] = {
+        "providers": [
+            "cli",
+            "env",
+            "file",
+        ],
+        "type": "int",
+        "default": 0,
+        "short": "e",
+        "long": "errors",
+        "help": "Errors allowed.  Default is 0.",
+    }
+
+    cli = elective.CliConfiguration(
+        description=description,
+        options=options,
+    )
+    cli.config()
+
+    cli.load(argv=["-e", "5"])
+
+    expected = {
+        "errors": 5,
+    }
+
+    assert cli.options == expected
+
+    cli.load(argv=["--errors", "5"])
+    assert cli.options == expected
+
+    cli.load(argv=[])
+
+    expected = {
+        "errors": 0,
+    }
+
+    assert cli.options == expected
+
+    with pytest.raises(SystemExit) as error:
+        cli.load(argv=["--errors", "3.14"])
+
+    assert error.type == SystemExit
+    assert error.value.code == 2
+    assert "invalid int value" in capsys.readouterr().err
+
+
 def test_boolean_group_option():
     """Should load a boolean group option."""
     # Load CLI options.
