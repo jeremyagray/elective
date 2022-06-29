@@ -180,6 +180,57 @@ def test_int_option(capsys):
     assert "invalid int value" in capsys.readouterr().err
 
 
+def test_float_option(capsys):
+    """Should load a float option."""
+    # Load CLI options.
+    description = "This is a description."
+    options = {}
+    options["pi"] = {
+        "providers": [
+            "cli",
+            "env",
+            "file",
+        ],
+        "type": "float",
+        "default": 3.0,
+        "short": "p",
+        "long": "pi",
+        "help": "The value of pi.  Default is 3.0.",
+    }
+
+    cli = elective.CliConfiguration(
+        description=description,
+        options=options,
+    )
+    cli.config()
+
+    cli.load(argv=["-p", "3.14"])
+
+    expected = {
+        "pi": 3.14,
+    }
+
+    assert cli.options == expected
+
+    cli.load(argv=["--pi", "3.14"])
+    assert cli.options == expected
+
+    cli.load(argv=[])
+
+    expected = {
+        "pi": 3.0,
+    }
+
+    assert cli.options == expected
+
+    with pytest.raises(SystemExit) as error:
+        cli.load(argv=["-p", "22/7"])
+
+    assert error.type == SystemExit
+    assert error.value.code == 2
+    assert "invalid float value" in capsys.readouterr().err
+
+
 def test_boolean_group_option():
     """Should load a boolean group option."""
     # Load CLI options.
