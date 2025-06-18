@@ -1,8 +1,10 @@
 # ******************************************************************************
 #
-# elective:  a Python configuration loader generator
+# elective, a Python configuration loader generator
 #
-# Copyright 2021 Jeremy A Gray <gray@flyquackswim.com>.
+# Copyright 2021-2025 Jeremy A Gray <gray@flyquackswim.com>.
+#
+# All rights reserved.
 #
 # SPDX-License-Identifier: MIT
 #
@@ -18,7 +20,7 @@ sys.path.insert(0, os.path.abspath(".."))
 # Project information.
 
 author = "Jeremy A Gray"
-copyright = "2021, Jeremy A Gray"
+copyright = "2025, Jeremy A Gray"
 project = "elective"
 release = "0.1.2"
 

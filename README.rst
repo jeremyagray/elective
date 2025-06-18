@@ -1,15 +1,18 @@
-.. *****************************************************************************
+.. ****************************************************************************
 ..
-.. elective:  a Python configuration loader generator
+.. elective, a Python configuration loader generator
 ..
-.. Copyright 2021-2022 Jeremy A Gray <gray@flyquackswim.com>.
+.. Copyright 2021-2025 Jeremy A Gray <gray@flyquackswim.com>.
+..
+.. All rights reserved.
 ..
 .. SPDX-License-Identifier: MIT
 ..
-.. *****************************************************************************
+.. ****************************************************************************
 
-elective
---------
+==========
+ elective
+==========
 
 A `Python`_ configuration loader generator.
 
@@ -21,7 +24,7 @@ A `Python`_ configuration loader generator.
    :alt: Documentation Status
 
 What is elective?
-~~~~~~~~~~~~~~~~~
+=================
 
 ``elective`` is a `Python`_ program configuration loader generator that
 can leverage environment variables, configuration files (TOML, JSON,
@@ -33,7 +36,7 @@ providers file formats and of the method of combining the results from
 all providers.
 
 Roadmap
-~~~~~~~
+=======
 
 * Allow for configurable provider precedence.
 * Allow for configurable provider combination.
@@ -54,7 +57,7 @@ Roadmap
 * Generate tests for the generated configuration.
 
 Installation
-~~~~~~~~~~~~
+============
 
 Install elective with::
 
@@ -66,7 +69,7 @@ or with poetry::
   poetry add elective
 
 Usage
-~~~~~
+=====
 
 In code::
 
@@ -76,7 +79,7 @@ See the source and `documentation
 <https://elective.readthedocs.io/en/latest/>`_ for more information.
 
 Copyright and License
-=====================
+---------------------
 
 SPDX-License-Identifier: `MIT`_
 
@@ -104,7 +107,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 Author
-~~~~~~
+======
 
 `Jeremy A Gray <gray@flyquackswim.com>`_.
 

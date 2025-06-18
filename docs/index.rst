@@ -1,15 +1,18 @@
-.. *****************************************************************************
+.. ****************************************************************************
 ..
-.. elective:  a Python configuration loader generator
+.. elective, a Python configuration loader generator
 ..
-.. Copyright 2021 Jeremy A Gray <gray@flyquackswim.com>.
+.. Copyright 2021-2025 Jeremy A Gray <gray@flyquackswim.com>.
+..
+.. All rights reserved.
 ..
 .. SPDX-License-Identifier: MIT
 ..
-.. *****************************************************************************
+.. ****************************************************************************
 
-``elective`` Documentation
-==========================
+============================
+ ``elective`` Documentation
+============================
 
 .. toctree::
    :maxdepth: 3
@@ -21,8 +24,9 @@
    ../cli
    ../license
 
-Indices and tables
-==================
+====================
+ Indices and tables
+====================
 
 * :ref:`genindex`
 * :ref:`modindex`
