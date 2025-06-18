@@ -2,7 +2,9 @@
 #
 # elective:  a Python configuration loader generator
 #
-# Copyright 2021 Jeremy A Gray <gray@flyquackswim.com>.
+# Copyright 2021-2025 Jeremy A Gray <gray@flyquackswim.com>.
+#
+# All rights reserved.
 #
 # SPDX-License-Identifier: MIT
 #
@@ -10,41 +12,20 @@
 
 [build-system]
 
-# Setuptools.
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
-
 # Poetry.
-# requires = ["poetry_core>=1.0.0"]
-# build-backend = "poetry.core.masonry.api"
+requires = ["poetry_core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
 
 [tool]
 
-[tool.black]
+[tool.doc8]
 
-line-length = 88
-target-version = ['py38']
-include = '\.pyi?$'
-exclude = '''
-
-(
-  /(
-    \.git
-    | \.pytest_cache
-    | __pycache__
-    | htmlcov
-  )/
-)
-'''
-
-[tool.isort]
-
-ensure_newline_before_comments = true
-force_single_line = true
-include_trailing_comma = true
-line_length = 88
-multi_line_output = 3
-use_parentheses = true
+ignore-path = [
+  ".tox",
+  ".venv",
+  "docs/_build",
+  "*.egg-info",
+]
 
 [tool.pccc]
 
@@ -98,11 +79,9 @@ classifiers = [
   "Environment :: Console",
   "License :: OSI Approved :: MIT License",
   "Intended Audience :: Developers",
-  "Programming Language :: Python :: 3.6",
-  "Programming Language :: Python :: 3.7",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Topic :: Software Development :: User Interfaces",
 ]
 
@@ -118,28 +97,24 @@ include = [
 
 [tool.poetry.dependencies]
 
-"ruamel.yaml" = "^0"
-bespon = "^0.6"
-python = ">=3.6.1,<4.0"
-toml = "^0"
+"ruamel.yaml" = ">=0,<1"
+bespon = ">=0,<1"
+python = ">=3.11.1,<4.0"
+toml = ">=0,<1"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 
-Sphinx = "^3.4"
-black = { version = "*", allow-prereleases = true }
-factory-boy = "^3.2"
-flake8 = "^3.8"
-flake8-docstrings = "^1.5"
-hypothesis = "^6.9"
-isort = "^5.6"
-pccc = "^0"
-pre-commit = "^2.9"
-pydocstyle = "^5.1"
-pyfakefs = "^4.3"
-pytest = "^6.1"
-pytest-cov = "^2.10"
-tox = "^3.21"
-twine = "^3.3"
+Sphinx = ">=7"
+doc8 = ">=2"
+factory-boy = ">=3"
+hypothesis = ">=6"
+pccc = ">=0"
+pre-commit = ">=3"
+pyfakefs = ">=5"
+pytest = ">=8"
+pytest-cov = ">=4"
+ruff = ">=0"
+tox = ">=4"
 
 [tool.poetry.scripts]
 
@@ -151,4 +126,34 @@ elective = "elective:main"
 "Documentation" = "https://elective.readthedocs.io/"
 "Repository" = "https://github.com/jeremyagray/elective"
 
-[tool.pytest.ini_options]
+[tool.ruff.lint]
+
+select = [
+  "B",
+  "C90",
+  "D",
+  "E",
+  "F",
+  "I",
+  "RUF",
+  "S",
+  "T20",
+  "W",
+]
+
+ignore = [
+  "D203",
+  "D213",
+]
+
+[tool.ruff.lint.per-file-ignores]
+
+"__init__.py" = [ "F401" ]
+
+"tests/**/*.py" = [
+    "S101",
+]
+
+"**/test_*.py" = [
+    "S101",
+]
