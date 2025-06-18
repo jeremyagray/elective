@@ -1,8 +1,10 @@
 # ******************************************************************************
 #
-# elective:  a Python configuration loader generator
+# elective, a Python configuration loader generator
 #
-# Copyright 2021-2022 Jeremy A Gray <gray@flyquackswim.com>.
+# Copyright 2021-2025 Jeremy A Gray <gray@flyquackswim.com>.
+#
+# All rights reserved.
 #
 # SPDX-License-Identifier: MIT
 #
@@ -17,3 +19,4 @@ from .env import EnvConfiguration
 from .exceptions import ElectiveFileLoadingError
 from .files import FileConfiguration
 from .state import State
+from .util import _convert_dict_to_list, _flatten_to_list, _format_sh, _is_listdict
