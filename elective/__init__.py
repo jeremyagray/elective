@@ -10,7 +10,7 @@
 #
 # ******************************************************************************
 
-"""elective:  a Python configuration loader generator."""
+"""``elective`` module exports."""
 
 from .cli import CliConfiguration
 from .config import Configuration

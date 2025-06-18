@@ -1,19 +1,21 @@
 # ******************************************************************************
 #
-# elective:  a Python configuration loader generator
+# elective, a Python configuration loader generator
 #
-# Copyright 2021-2022 Jeremy A Gray <gray@flyquackswim.com>.
+# Copyright 2021-2025 Jeremy A Gray <gray@flyquackswim.com>.
+#
+# All rights reserved.
 #
 # SPDX-License-Identifier: MIT
 #
 # ******************************************************************************
 
-"""Elective generic configuration tests."""
+"""``State`` class tests."""
 
 import math
 
 import pytest
-from hypothesis import given
+from hypothesis import example, given
 from hypothesis import strategies as st
 
 import elective
@@ -33,7 +35,7 @@ def test_state___init___empty():
     value=st.text(alphabet=st.characters()),
     source=st.text(alphabet=st.characters()),
 )
-def test_state___init___inital_string(value, source):
+def test_state___init___initial_string(value, source):
     """Should initialize a ``State`` with an initial string value."""
     state = elective.State((value, source))
 
@@ -51,7 +53,7 @@ def test_state___init___inital_string(value, source):
         ),
     ),
 )
-def test_state___init___inital_list(initial):
+def test_state___init___initial_list(initial):
     """Should initialize a ``State`` with an initial string value."""
     state = elective.State(*initial)
 
@@ -111,7 +113,7 @@ def test_state___repr__(initial):
     value=st.integers(),
     source=st.text(alphabet=st.characters()),
 )
-def test_state___init___inital_int(value, source):
+def test_state___init___initial_int(value, source):
     """Should initialize a ``State`` with an initial integer value."""
     state = elective.State((value, source))
 
@@ -121,11 +123,14 @@ def test_state___init___inital_int(value, source):
     assert state.sources == [source]
 
 
+@example(float("nan"), "test")
+@example(float("inf"), "test")
+@example(-float("inf"), "test")
 @given(
     value=st.floats(),
     source=st.text(alphabet=st.characters()),
 )
-def test_state___init___inital_float(value, source):
+def test_state___init___initial_float(value, source):
     """Should initialize a ``State`` with an initial float value."""
     state = elective.State((value, source))
 
@@ -145,7 +150,7 @@ def test_state___init___inital_float(value, source):
     value=st.booleans(),
     source=st.text(alphabet=st.characters()),
 )
-def test_state___init___inital_bool(value, source):
+def test_state___init___initial_bool(value, source):
     """Should initialize a ``State`` with an initial bool value."""
     state = elective.State((value, source))
 

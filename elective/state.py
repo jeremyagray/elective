@@ -1,8 +1,10 @@
 # ******************************************************************************
 #
-# elective:  a Python configuration loader generator
+# elective, a Python configuration loader generator
 #
-# Copyright 2021-2022 Jeremy A Gray <gray@flyquackswim.com>.
+# Copyright 2021-2025 Jeremy A Gray <gray@flyquackswim.com>.
+#
+# All rights reserved.
 #
 # SPDX-License-Identifier: MIT
 #
@@ -23,8 +25,9 @@ class State:
 
         Parameters
         ----------
-        args : tuple
+        args : iterable
             An iterable of tuples of value and source pairs.
+
         """
         self.values = []
         self.sources = []
@@ -99,5 +102,5 @@ class State:
         if not isinstance(other, State):
             raise TypeError("other must be a State")
 
-        for (v, s) in zip(other.values, other.sources):
+        for v, s in zip(other.values, other.sources):
             self.update(v, s)
