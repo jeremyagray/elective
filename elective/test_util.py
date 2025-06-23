@@ -12,13 +12,6 @@
 
 """Environment configuration tests."""
 
-# import math
-# import sys
-
-# import pytest
-# from hypothesis import given
-# from hypothesis import strategies as st
-
 import elective
 
 
