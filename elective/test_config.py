@@ -1,23 +1,23 @@
 # ******************************************************************************
 #
-# elective:  a Python configuration loader generator
+# elective, a Python configuration loader generator
 #
-# Copyright 2021-2022 Jeremy A Gray <gray@flyquackswim.com>.
+# Copyright 2021-2025 Jeremy A Gray <gray@flyquackswim.com>.
+#
+# All rights reserved.
 #
 # SPDX-License-Identifier: MIT
 #
 # ******************************************************************************
 
-"""Elective generic configuration tests."""
+"""Generic ``Configuration`` tests."""
 
 import pytest
-from hypothesis import given
-from hypothesis import strategies as st
 
 import elective
 
 
-def test_configuration___init__():
+def test_configuration_initial_is_empty():
     """Should have an empty ``options`` property."""
     conf = elective.Configuration()
 
