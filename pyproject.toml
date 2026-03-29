@@ -2,7 +2,7 @@
 #
 # elective:  a Python configuration loader generator
 #
-# Copyright 2021-2025 Jeremy A Gray <gray@flyquackswim.com>.
+# Copyright 2021-2026 Jeremy A Gray <gray@flyquackswim.com>.
 #
 # All rights reserved.
 #
@@ -79,9 +79,11 @@ classifiers = [
   "Environment :: Console",
   "License :: OSI Approved :: MIT License",
   "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Topic :: Software Development :: User Interfaces",
 ]
 
@@ -99,12 +101,12 @@ include = [
 
 "ruamel.yaml" = ">=0,<1"
 bespon = ">=0,<1"
-python = ">=3.11.1,<4.0"
+python = ">=3.10.1,<4.0"
 toml = ">=0,<1"
 
 [tool.poetry.group.dev.dependencies]
 
-Sphinx = ">=7"
+sphinx = ">=7"
 doc8 = ">=2"
 factory-boy = ">=3"
 hypothesis = ">=6"
