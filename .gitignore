@@ -2,7 +2,7 @@
 #
 # elective, a Python configuration loader generator
 #
-# Copyright 2021-2025 Jeremy A Gray <gray@flyquackswim.com>.
+# Copyright 2021-2026 Jeremy A Gray <gray@flyquackswim.com>.
 #
 # All rights reserved.
 #
@@ -19,6 +19,7 @@
 *.pyc
 .coverage
 .hypothesis
+.prompt
 .pytest_cache
 .python-version
 .tox
